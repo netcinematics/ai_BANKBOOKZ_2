@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>ai_BANKBOOKZ_2</title>
+        <meta name="description" content="RH_APP">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- <link rel="stylesheet" href=""> -->
+    </head>
+    <style>
+        body{ background:black; color:steelblue; font-size: 1.2em; 
+            padding:1%; font-family: verdana;}
+        /* .flex_frame {
+            height: 100%;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        } */
+        #importTXT{
+            background:black;
+            color:lime;
+            width: 91%;
+            padding: 4%;
+            border-radius: 13px;
+
+        }
+        .main_header {
+            background:black;
+            border:solid 1px purple;
+            border-radius: 13px;
+            margin:1%;
+            padding:0.666em;
+            margin-bottom:0.444em;
+            box-shadow: inset 0px 3px 10px purple;
+            display: flex;
+            justify-content: center;   
+            /* flex:0; */
+            /* height: 4em;          */
+        }
+        .main_menu {
+            background:rgb(72, 80, 111);
+            border:solid 1px rgb(0, 128, 45);
+            border-radius: 13px;
+            margin:1%;
+            padding:0.666em;
+            margin-bottom:0.444em;
+            box-shadow: inset 0px 3px 10px purple;
+            display: flex;
+            justify-content: space-evenly;
+            max-width: 80%;
+            margin: -1em auto 0.222em auto;
+            font-size: 0.666em;
+            padding: 0.444em;
+        }
+        .MAIN_VIEW {
+            background:black;
+            border:solid 1px lime;
+            border-radius: 13px;
+            margin:1%;
+            padding:3%;
+            margin-top:0.444%;
+            margin-bottom:0.444%;
+            box-shadow: inset 0px 0px 7px lime;
+            display: flex;
+            justify-content: center;            
+            /* flex:1; */
+
+        }
+        .main_footer {
+            background:black;
+            border:solid 1px cyan;
+            border-radius: 13px;
+            margin:1%;
+            padding:0.666em;
+            margin-top:0.444em;
+            box-shadow: inset 0px -1px 8px 0px cyan;
+            display: flex;
+            justify-content: space-evenly;
+            /* flex:0; */
+            /* height: 4em;                       */
+        }
+
+        .BTN{
+            background:grey;
+            border-radius: 8px;
+            border:solid 1px darkslateblue;
+            cursor:pointer;
+            color:cyan;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size:0.888em;
+            /* margin: 0 2em; */
+        }
+        .BTN:hover{border:1px solid steelblue; color:purple}
+        .BTN:active{border:1px solid lime; color:green}
+        @media only screen and (max-width: 800px) { /* TABLET */
+         body{  background-color: #00070d;}
+         .BTN{font-size:0.999em;}
+        }  
+        @media only screen and (max-width: 500px) { /* PHONE */
+            body{ background-color: #07000c;}
+            .BTN{font-size:1em;}
+        }
+
+      /*  custom scroll bar */
+      .scrollBarV {height:97%; overflow-x:scroll; background:#010111; border: 1px steelblue solid; border-radius:13px;  }
+      .scrollBarV::-webkit-scrollbar-track { background-color: #010213;  border-radius: 13px; }
+      .scrollBarV::-webkit-scrollbar { width: 0.666em; height: 100%; }
+      .scrollBarV::-webkit-scrollbar-thumb { background-color: #04223c; border-radius: 13px;
+      background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, transparent 26%, transparent 51%, rgba(255, 255, 255, -0.4) 51%, rgba(255, 255, 255, 0.6) 74%, transparent 74%, transparent);
+      }
+
+    </style>
+    <body>
+        <!-- <section class="flex_frame"> -->
+
+            <header class="main_header">ai_BANKBOOKZ_2</header>
+            <aside class="main_menu">
+                <button class="BTN" onclick="go_CHART_VIEW_Click()">CHART</button>
+                <button class="BTN" onclick="go_DATA_VIEW_Click()">DATA</button>
+                <button class="BTN" onclick="go_EDIT_VIEW_Click()">EDIT</button></footer></aside>
+            <section id="MAIN_VIEW" class="MAIN_VIEW">section</section>
+            <!-- <footer class="main_footer">
+                <button class="BTN" onclick="go_BTNClick()">Btn1</button>
+                <button class="BTN">Btn2</button>
+                <button class="BTN">Btn3</button>
+            </footer> -->
+        <!-- </section> -->
+
+
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <!-- <script src="" async defer></script> -->
+        <script async defer>
+
+            const MAIN_VIEW = document.getElementById("MAIN_VIEW");
+
+            /*************************************************************\
+             * ai_bankbookz_2 - ability to save monthly data in localstorage
+            \*************************************************************/
+            let ai_bankbookz_2=null;
+            const ai_bankbookz_2_LOAD_MOCK_DATA=()=>{ //READ
+                ai_bankbookz_2 = {"ticks":[{"tick":"NVDA","price":"940","ath":"870","ath_ymd":"2024_03_17","price_ymd":"2024_03_23"}]}
+            }
+            const ai_bankbookz_2_init=()=>{ //READ from LOCAL STORAGE
+                try{
+                    ai_bankbookz_2 = (localStorage.ai_bankbookz_2)?
+                    JSON.parse( localStorage.ai_bankbookz_2 ):null;
+                    // ai_bankbookz_2 = null; //DEV: load mock data
+                    if(!ai_bankbookz_2){ ai_bankbookz_2_LOAD_MOCK_DATA(); }
+                } catch(e){ ai_bankbookz_2_LOAD_MOCK_DATA(); }
+            }; ai_bankbookz_2_init();
+            //****************************END ai_bankbookz_2_matrix
+
+
+            let go_CHART_VIEW_Click = ()=>{
+                console.log('clkd chart')
+                MAIN_VIEW.innerHTML = 
+                    `<section><header>charts</header></section>`
+            }
+            let go_DATA_VIEW_Click = ()=>{
+                let example_txt = `{"year":2024,"month":6,"tkr":"btc","txnz":[{"mode":"buy","amt":0}]}`;
+                MAIN_VIEW.innerHTML = 
+                    `<section style="width:100%;font-size:0.777em;margin:1%;">
+                        <header style="margin-bottom:1em;">IMPORT DATA</header>
+                        <textarea id="importTXT">${example_txt}</textarea> 
+                        <footer class="main_footer">
+                            <button class="BTN" onclick="import_BTNClick()">IMPORT</button>
+                            <button class="BTN">Btn2</button>
+                            <button class="BTN">Btn3</button>
+                        </footer>   
+                    </section>`
+            }
+            let go_EDIT_VIEW_Click = ()=>{
+                console.log('clkd edit')
+                MAIN_VIEW.innerHTML = 
+                    `<section><header>edit</header></section>`
+            }
+            let import_BTNClick = ()=>{
+                console.log('clkd import')
+                let importDATA = null;
+                let importTXT = document.getElementById('importTXT')
+                try{
+                    importDATA = JSON.parse(importTXT.value);
+                    if(!importTXT || !importDATA || !importDATA.year || !importDATA.month){
+                        go_DATA_VIEW_Click();
+                    } 
+                    else { //good data. REPLACE UNIQUE OBJECT IN LOCAL STORAGE.
+                        importTXT.value = 'SAVED!'
+                    }
+                } catch (e){
+                    go_DATA_VIEW_Click();
+                }
+            }
+            let go_BTNClick = ()=>{
+                console.log('clkd')
+            }
+
+        </script>
+
+
+    </body>
+</html>
