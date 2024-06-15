@@ -14,7 +14,7 @@
     </head>
     <style>
         body{ background:black; color:steelblue; font-size: 1.2em; 
-            padding:1%; font-family: verdana;}
+            padding:1em 10% 1em 10%; font-family: verdana;}
         /* .flex_frame {
             height: 100%;
             min-height: 100%;
@@ -97,13 +97,16 @@
         }
         .BTN:hover{border:1px solid steelblue; color:purple}
         .BTN:active{border:1px solid lime; color:green}
-        @media only screen and (max-width: 800px) { /* TABLET */
-         body{  background-color: #00070d;}
-         .BTN{font-size:0.999em;}
+        @media only screen and (max-width: 800px) { /************* TABLET */
+            body{  background-color: #00070d; padding:4.444%;        
+            }
+            .BTN{font-size:0.999em;}
         }  
-        @media only screen and (max-width: 500px) { /* PHONE */
-            body{ background-color: #07000c;}
-            .BTN{font-size:1em;}
+        @media only screen and (max-width: 500px) { /************* PHONE */
+                body{ background-color: #07000c; padding:1%;
+        
+                }
+                .BTN{font-size:1em;}
         }
 
       /*  custom scroll bar */
@@ -122,7 +125,7 @@
             <aside class="main_menu">
                 <button class="BTN" onclick="go_CHART_VIEW_Click()">CHART</button>
                 <button class="BTN" onclick="go_DATA_VIEW_Click()">DATA</button>
-                <button class="BTN" onclick="go_EDIT_VIEW_Click()">EDIT</button></footer></aside>
+                <button class="BTN" onclick="go_GALLERY_VIEW_Click()">EDIT</button></footer></aside>
             <section id="MAIN_VIEW" class="MAIN_VIEW">section</section>
             <!-- <footer class="main_footer">
                 <button class="BTN" onclick="go_BTNClick()">Btn1</button>
@@ -168,7 +171,7 @@
                 MAIN_VIEW.innerHTML = 
                     `<section style="width:100%;font-size:0.777em;margin:1%;">
                         <header style="margin-bottom:1em;">IMPORT DATA</header>
-                        <textarea id="importTXT">${example_txt}</textarea> 
+                        <textarea id="importTXT" style="resize:vertical">${example_txt}</textarea> 
                         <footer class="main_footer">
                             <button class="BTN" onclick="import_BTNClick()">IMPORT</button>
                             <button class="BTN">Btn2</button>
@@ -176,10 +179,17 @@
                         </footer>   
                     </section>`
             }
-            let go_EDIT_VIEW_Click = ()=>{
-                console.log('clkd edit')
+            let go_GALLERY_VIEW_Click = ()=>{
+                let data_gallery = [`<div>hi</div>`]
                 MAIN_VIEW.innerHTML = 
-                    `<section><header>edit</header></section>`
+                    `<section><header>edit</header>
+                    <article id="galleryFRAME" class="scrollBarV">
+                        ${data_gallery}
+                    </article>    
+                    </section>`
+
+
+                    
             }
             let import_BTNClick = ()=>{
                 console.log('clkd import')
