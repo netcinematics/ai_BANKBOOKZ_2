@@ -373,5 +373,150 @@
     }
 
 </script>
+<!--script>
+let getTXNZData = ()=>{ 
+    //SCRaf3rhttps://robinhood.com/account/history
+    //SCRaf3rhttps://robinhood.com/account/history?account=rhc_crypto
+    let titles=document.querySelectorAll('H2'); ;
+    let PendingDIV = titles [0];//possible
+    let RecentDIV = titles [1]; //done
+    let OlderDIV = titles [2];  //done
+    let recentNODE=titles[1].nextSibling;
+    let olderNODE=titles[2].nextSibling;
+    let tkr,type,mode,MoDay,MoNUM,amt,shares,price,ymd,ymtID;
+    let TKRTYPE='',TXNDATE='',TXNAMT='',TXNSHARESPRICE='';
+    let rhData=[],TKRTYPEARR=[],TXNSHARESPRICEARR=[];
+    let dateRegX = /h$/;
+    let today = new Date();
+    let year = today.getFullYear(); 
+    let month = today.getMonth(); 
+    let formattedMonth = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(today);
+    let day = today.getDate().toString();
+    let todayStamp = `${formattedMonth} ${day}`;
+    let limiter = 1, limit=300, skiprow=false;
+    //****UTILITIES***********************************************
+    function matchTKRTitle(tkr){
+      tkr = tkr.toUpperCase();
+      if(tkr==='COSTCO'){tkr='COST'}
+      else if(tkr==='BITCOIN'){tkr='BTC'}
+      else if(tkr==='ISHARES BITCOIN TRUST'){tkr='IBIT'}
+      else if(tkr==='COINBASE'){tkr='COIN'}
+      else if(tkr==='AMAZON'){tkr='AMZN'}
+      else if(tkr==='VISA'){tkr='V'}
+      else if(tkr==='NVIDIA'){tkr='NVDA'}
+      else if(tkr==='ALPHABET CLASS C'){tkr='GOOG'}
+      else if(tkr==='MONGODB'){tkr='MDB'}
+      else if(tkr==='DOGECOIN'){tkr='DOGE'}
+      else if(tkr==='ETHEREUM'){tkr='ETH'}
+      else if(tkr==='AVALANCHE'){tkr='AVAX'}
+      else if(tkr==='ROBINHOO MARKETS'){tkr='HOOD'}
+      return tkr;
+    }
+    function getMoNUM(mo){
+      let moNUM = 0;
+      if(mo==='JAN')     {moNUM=1}
+      else if(mo==='FEB'){moNUM=2}
+      else if(mo==='MAR'){moNUM=3}
+      else if(mo==='APR'){moNUM=4}
+      else if(mo==='MAY'){moNUM=5} 
+      else if(mo==='JUN'){moNUM=6}
+      else if(mo==='JUL'){moNUM=7}
+      else if(mo==='AUG'){moNUM=8}
+      else if(mo==='SEP'){moNUM=9}
+      else if(mo==='OCT'){moNUM=10}
+      else if(mo==='NOV'){moNUM=11}
+      else if(mo==='DEC'){moNUM=12}  
+      return moNUM;      
+    }
+    //****RUNTIME-LOOP ********************************************************
+function RUNTIME_LOOP(tgtNode){    
+    while(tgtNode.classList.contains('web-app-emotion-cache-1gb8ekd'))
+    {  //console.log('#',limiter)
+         skiprow=tgtNode.children[0].children[0].children[0].children[0].children[1].children[0];
+         if(skiprow && skiprow.innerHTML==='Canceled'){//skip row canceled
+            console.log('SKIPROW','Canceled TXN')
+            //EXIT CONDITIONS
+            limiter++; //EXIT
+            if(limiter > limit){console.log('LIMIT REACHED',limit); break } //EXIT
+            if(!tgtNode.nextSibling){console.log('END of DATA|','TXNCNT',limiter-1); break } //EXIT
+            tgtNode=tgtNode.nextSibling;  //EXIT            
+            continue;
+         }
+         skiprow=tgtNode.children[0].children[0].children[0].children[0].children[1].children[0].children[0]
+         if(skiprow && skiprow.innerHTML.length>0){//skip row interest payment
+            console.log('SKIPROW','Interest PMT')
+            //EXIT CONDITIONS
+            limiter++; //EXIT
+            if(limiter > limit){console.log('LIMIT REACHED',limit); break } //EXIT
+            if(!tgtNode.nextSibling){console.log('END of DATA|','TXNCNT',limiter-1); break } //EXIT
+            tgtNode=tgtNode.nextSibling;  //EXIT            
+            continue;
+         }
+         //GETRAWz
+         TKRTYPE = tgtNode.children[0].children[0].children[0].children[0].children[0].children[0].innerHTML;
+         TXNDATE = tgtNode.children[0].children[0].children[0].children[0].children[0].children[1].innerHTML;
+         TXNAMT  = tgtNode.children[0].children[0].children[0].children[0].children[1].children[0].innerHTML;
+         TXNSHARESPRICE = tgtNode.children[0].children[0].children[0].children[0].children[1].children[2].innerHTML;
+         //TEST
+         // console.log('TKRTYPE',TKRTYPE);
+         // console.log('TXNDATE',TXNDATE);
+         // console.log('TXNAMT',TXNAMT);
+         // console.log('TXNSHARESPRICE',TXNSHARESPRICE);
+         //DATA TRANSFORM
+         TKRTYPEARR = TKRTYPE.split(' ')
+         type = TKRTYPEARR.pop().toUpperCase();
+         mode = TKRTYPEARR.pop()
+         tkr = TKRTYPEARR.join(' ').toUpperCase();
+         tkr = matchTKRTitle(tkr);
+         if(dateRegX.test(TXNDATE)){ // today mask
+            MoDay = todayStamp;
+         } else { MoDay = TXNDATE}
+         let MoDayArr = MoDay.split(' ');
+         let dayNUM = MoDayArr[1];
+         let moSTR = MoDayArr[0].toUpperCase();
+         let moNUM = getMoNUM(moSTR);
+         ymd = `${year}_${moNUM}_${dayNUM}`;
+         ymtID = `${year}_${moNUM}_${tkr}`;
+         TXNSHARESPRICEARR = TXNSHARESPRICE.split(' ')
+         price = TXNSHARESPRICEARR.pop();
+         price = price.replace(/\$/g,'');
+         shares = TXNSHARESPRICEARR[0];
+         shares = parseFloat(shares).toFixed(4)
+         amt = TXNAMT.replace(/\$/g,'')
+         amt = parseFloat(amt).toFixed(0);
+         //TEST
+         // console.log('TKR:',tkr,'TYPE:',type,'MODE:',mode,'DATE',MoDay,'AMT',TXNAMT,'SHARES',shares,'PRICE',price);
+         rhData.push({ //SAVE JSON TXN DATA (tysm)
+            "tkr":tkr,"type":type,"mode":mode,"ymd":ymd,"ymtID":ymtID,
+            "amt":amt,"shares":shares,"price":price,role:''
+         })
+         //EXIT CONDITIONS
+         limiter++; //EXIT
+         if(limiter > limit){console.log('LIMIT REACHED',limit); break } //EXIT
+         if(!tgtNode.nextSibling){console.log('END of DATA|','TXNCNT',limiter-1); break } //EXIT
+         tgtNode=tgtNode.nextSibling;  //EXIT
+    }
+} //END RUNTIME_LOOP
+debugger;
+RUNTIME_LOOP(recentNODE); //RUN recentNODE
+debugger;
+RUNTIME_LOOP(olderNODE); //RUN olderNODE
+debugger;
+    if(rhData.length){
+       console.log('TOTAL_RECORDS:',rhData.length)
+       rhData = rhData.reverse(); //FIFO
+       console.log('MyTXNData:');
+       console.log(JSON.stringify(rhData))
+    }else{ 
+       console.log('no data')
+    }
+}; 
+getTXNZData();
+/* EXAMPLE
+
+[{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_3","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"64,428.71","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_3","ymtID":"2024_4_BTC","amt":"22","shares":"0.0003","price":"66,402.48","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_3","ymtID":"2024_4_BTC","amt":"44","shares":"0.0007","price":"66,058.39","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_3","ymtID":"2024_4_BTC","amt":"88","shares":"0.0013","price":"65,534.09","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"66","shares":"0.0010","price":"66,049.60","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"177","shares":"0.0026","price":"67,364.79","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"33","shares":"0.0005","price":"67,529.73","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"33","shares":"0.0005","price":"67,794.45","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"80","shares":"0.0012","price":"68,403.54","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"20","shares":"0.0003","price":"68,562.79","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"30","shares":"0.0004","price":"68,797.09","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"66,661.70","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_4","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"65,547.65","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_6","ymtID":"2024_4_BTC","amt":"166","shares":"0.0024","price":"69,134.39","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_6","ymtID":"2024_4_BTC","amt":"22","shares":"0.0003","price":"69,299.47","role":""},{"tkr":"LITECOIN","type":"SELL","mode":"Market","ymd":"2024_4_6","ymtID":"2024_4_LITECOIN","amt":"10","shares":"0.0991","price":"103.96","role":""},{"tkr":"CHAINLINK","type":"SELL","mode":"Market","ymd":"2024_4_6","ymtID":"2024_4_CHAINLINK","amt":"5","shares":"0.2900","price":"17.67","role":""},{"tkr":"DOGE","type":"SELL","mode":"Market","ymd":"2024_4_6","ymtID":"2024_4_DOGE","amt":"10","shares":"50.1200","price":"0.194059","role":""},{"tkr":"BITCOIN CASH","type":"SELL","mode":"Market","ymd":"2024_4_6","ymtID":"2024_4_BITCOIN CASH","amt":"8","shares":"0.0123","price":"690.53","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_7","ymtID":"2024_4_BTC","amt":"32","shares":"0.0005","price":"69,578.68","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"111","shares":"0.0016","price":"70,460.76","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"60","shares":"0.0008","price":"70,924.69","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"22","shares":"0.0003","price":"71,011.18","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"88","shares":"0.0012","price":"71,879.95","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"33","shares":"0.0005","price":"72,003.45","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"22","shares":"0.0003","price":"72,217.30","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"22","shares":"0.0003","price":"72,404.33","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"111","shares":"0.0016","price":"67,747.48","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_8","ymtID":"2024_4_BTC","amt":"111","shares":"0.0016","price":"68,868.12","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_9","ymtID":"2024_4_BTC","amt":"166","shares":"0.0024","price":"68,855.63","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_9","ymtID":"2024_4_BTC","amt":"111","shares":"0.0016","price":"68,876.74","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_10","ymtID":"2024_4_BTC","amt":"33","shares":"0.0005","price":"71,145.65","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_10","ymtID":"2024_4_BTC","amt":"111","shares":"0.0016","price":"68,886.75","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_11","ymtID":"2024_4_BTC","amt":"30","shares":"0.0004","price":"71,003.64","role":""},{"tkr":"AVAX","type":"SELL","mode":"Market","ymd":"2024_4_12","ymtID":"2024_4_AVAX","amt":"80","shares":"1.8090","price":"44.22","role":""},{"tkr":"ETH","type":"SELL","mode":"Market","ymd":"2024_4_12","ymtID":"2024_4_ETH","amt":"99","shares":"0.0289","price":"3,420.77","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_12","ymtID":"2024_4_BTC","amt":"222","shares":"0.0032","price":"68,375.14","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_12","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"63,083.83","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_12","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"66,665.68","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_12","ymtID":"2024_4_BTC","amt":"77","shares":"0.0012","price":"66,753.59","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_12","ymtID":"2024_4_BTC","amt":"25","shares":"0.0004","price":"66,941.72","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_12","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"65,550.05","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_12","ymtID":"2024_4_BTC","amt":"70","shares":"0.0010","price":"67,470.77","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_13","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"66,663.64","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_13","ymtID":"2024_4_BTC","amt":"50","shares":"0.0007","price":"67,491.40","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_13","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"62,876.94","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_13","ymtID":"2024_4_BTC","amt":"150","shares":"0.0023","price":"64,791.67","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_13","ymtID":"2024_4_BTC","amt":"222","shares":"0.0035","price":"63,056.17","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_13","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"65,080.65","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_14","ymtID":"2024_4_BTC","amt":"166","shares":"0.0025","price":"66,051.72","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_15","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"63,480.82","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_15","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"62,201.89","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_16","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"61,067.41","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_16","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"60,430.62","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_16","ymtID":"2024_4_BTC","amt":"22","shares":"0.0003","price":"64,515.75","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_16","ymtID":"2024_4_BTC","amt":"50","shares":"0.0008","price":"64,160.83","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_17","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"60,887.07","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_4_18","ymtID":"2024_4_BTC","amt":"222","shares":"0.0035","price":"63,336.47","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_18","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"63,041.10","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_18","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"60,104.90","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_18","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"60,462.12","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_4_18","ymtID":"2024_4_BTC","amt":"50","shares":"0.0008","price":"62,512.73","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_19","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"64,207.96","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_19","ymtID":"2024_4_BTC","amt":"100","shares":"0.0016","price":"64,378.40","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_19","ymtID":"2024_4_BTC","amt":"40","shares":"0.0006","price":"64,111.39","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_20","ymtID":"2024_4_BTC","amt":"20","shares":"0.0003","price":"64,327.09","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_20","ymtID":"2024_4_BTC","amt":"20","shares":"0.0003","price":"64,425.66","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_20","ymtID":"2024_4_BTC","amt":"44","shares":"0.0007","price":"64,767.09","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_4_20","ymtID":"2024_4_BTC","amt":"50","shares":"0.0008","price":"65,467.51","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_21","ymtID":"2024_4_BTC","amt":"60","shares":"0.0009","price":"65,734.13","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_21","ymtID":"2024_4_BTC","amt":"66","shares":"0.0010","price":"66,140.13","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_22","ymtID":"2024_4_BTC","amt":"40","shares":"0.0006","price":"66,459.07","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_22","ymtID":"2024_4_BTC","amt":"30","shares":"0.0004","price":"66,684.70","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_23","ymtID":"2024_4_BTC","amt":"33","shares":"0.0005","price":"66,604.50","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_23","ymtID":"2024_4_BTC","amt":"30","shares":"0.0005","price":"66,655.76","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_24","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"64,435.56","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_24","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"64,538.65","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_24","ymtID":"2024_4_BTC","amt":"111","shares":"0.0017","price":"63,865.06","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_24","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"63,324.15","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_24","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"62,211.25","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_24","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"61,101.33","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_4_25","ymtID":"2024_4_BTC","amt":"155","shares":"0.0024","price":"64,723.54","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_25","ymtID":"2024_4_BTC","amt":"55","shares":"0.0008","price":"64,778.61","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_26","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"62,882.08","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_4_26","ymtID":"2024_4_BTC","amt":"44","shares":"0.0007","price":"63,116.97","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_26","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"60,868.86","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_27","ymtID":"2024_4_BTC","amt":"22","shares":"0.0003","price":"63,832.37","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_28","ymtID":"2024_4_BTC","amt":"111","shares":"0.0019","price":"59,847.66","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_28","ymtID":"2024_4_BTC","amt":"111","shares":"0.0019","price":"58,872.73","role":""},{"tkr":"AVAX","type":"BUY","mode":"Market","ymd":"2024_4_29","ymtID":"2024_4_AVAX","amt":"88","shares":"2.5320","price":"34.75","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_29","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"63,326.50","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_4_29","ymtID":"2024_4_BTC","amt":"100","shares":"0.0016","price":"63,766.15","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_30","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"60,210.58","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_30","ymtID":"2024_4_BTC","amt":"111","shares":"0.0018","price":"60,069.43","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_30","ymtID":"2024_4_BTC","amt":"111","shares":"0.0019","price":"57,716.19","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_4_30","ymtID":"2024_4_BTC","amt":"111","shares":"0.0019","price":"59,883.78","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_1","ymtID":"2024_5_BTC","amt":"111","shares":"0.0019","price":"57,887.25","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_1","ymtID":"2024_5_BTC","amt":"111","shares":"0.0019","price":"58,110.87","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_1","ymtID":"2024_5_BTC","amt":"111","shares":"0.0019","price":"58,441.06","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_1","ymtID":"2024_5_BTC","amt":"111","shares":"0.0019","price":"57,104.65","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_1","ymtID":"2024_5_BTC","amt":"111","shares":"0.0019","price":"56,975.51","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_3","ymtID":"2024_5_BTC","amt":"44","shares":"0.0007","price":"61,539.85","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_3","ymtID":"2024_5_BTC","amt":"111","shares":"0.0018","price":"61,102.76","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_5_3","ymtID":"2024_5_BTC","amt":"100","shares":"0.0016","price":"62,566.35","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_5_3","ymtID":"2024_5_BTC","amt":"100","shares":"0.0016","price":"64,311.42","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_4","ymtID":"2024_5_BTC","amt":"111","shares":"0.0018","price":"62,548.69","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_4","ymtID":"2024_5_BTC","amt":"111","shares":"0.0018","price":"63,216.40","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_5_5","ymtID":"2024_5_BTC","amt":"111","shares":"0.0017","price":"64,455.16","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_6","ymtID":"2024_5_BTC","amt":"100","shares":"0.0016","price":"62,851.11","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_5_7","ymtID":"2024_5_BTC","amt":"55","shares":"0.0009","price":"63,983.13","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_9","ymtID":"2024_5_BTC","amt":"33","shares":"0.0005","price":"61,892.86","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_9","ymtID":"2024_5_BTC","amt":"35","shares":"0.0006","price":"62,151.85","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_9","ymtID":"2024_5_BTC","amt":"22","shares":"0.0004","price":"62,232.74","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_9","ymtID":"2024_5_BTC","amt":"35","shares":"0.0006","price":"62,519.26","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_9","ymtID":"2024_5_BTC","amt":"80","shares":"0.0013","price":"62,989.20","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_12","ymtID":"2024_5_BTC","amt":"100","shares":"0.0016","price":"61,106.28","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_13","ymtID":"2024_5_BTC","amt":"50","shares":"0.0008","price":"62,671.50","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_15","ymtID":"2024_5_BTC","amt":"100","shares":"0.0016","price":"64,443.03","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_5_15","ymtID":"2024_5_BTC","amt":"200","shares":"0.0031","price":"64,784.66","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_5_15","ymtID":"2024_5_BTC","amt":"100","shares":"0.0015","price":"65,448.50","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_5_15","ymtID":"2024_5_BTC","amt":"55","shares":"0.0008","price":"66,338.85","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_5_15","ymtID":"2024_5_BTC","amt":"100","shares":"0.0015","price":"66,123.96","role":""},{"tkr":"AVAX","type":"SELL","mode":"Limit","ymd":"2024_5_17","ymtID":"2024_5_AVAX","amt":"100","shares":"2.6316","price":"38.01","role":""},{"tkr":"BTC","type":"SELL","mode":"Limit","ymd":"2024_5_17","ymtID":"2024_5_BTC","amt":"100","shares":"0.0015","price":"67,130.41","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_17","ymtID":"2024_5_BTC","amt":"40","shares":"0.0006","price":"67,071.22","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_18","ymtID":"2024_5_BTC","amt":"66","shares":"0.0010","price":"66,664.53","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_5_19","ymtID":"2024_5_BTC","amt":"40","shares":"0.0006","price":"67,208.53","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_19","ymtID":"2024_5_BTC","amt":"66","shares":"0.0010","price":"66,325.90","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_19","ymtID":"2024_5_BTC","amt":"111","shares":"0.0017","price":"66,419.41","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_20","ymtID":"2024_5_BTC","amt":"100","shares":"0.0015","price":"67,537.14","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_20","ymtID":"2024_5_BTC","amt":"200","shares":"0.0029","price":"68,859.45","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_20","ymtID":"2024_5_BTC","amt":"20","shares":"0.0003","price":"68,783.21","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_20","ymtID":"2024_5_BTC","amt":"100","shares":"0.0014","price":"69,524.47","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_20","ymtID":"2024_5_BTC","amt":"200","shares":"0.0028","price":"71,034.37","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_20","ymtID":"2024_5_BTC","amt":"20","shares":"0.0003","price":"70,995.92","role":""},{"tkr":"DOGE","type":"BUY","mode":"Market","ymd":"2024_5_21","ymtID":"2024_5_DOGE","amt":"88","shares":"512.6000","price":"0.171662","role":""},{"tkr":"ETH","type":"BUY","mode":"Market","ymd":"2024_5_23","ymtID":"2024_5_ETH","amt":"100","shares":"0.0262","price":"3,822.74","role":""},{"tkr":"AVAX","type":"BUY","mode":"Market","ymd":"2024_5_23","ymtID":"2024_5_AVAX","amt":"88","shares":"2.2852","price":"38.51","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_23","ymtID":"2024_5_BTC","amt":"100","shares":"0.0015","price":"66,662.38","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_24","ymtID":"2024_5_BTC","amt":"60","shares":"0.0009","price":"67,927.25","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_24","ymtID":"2024_5_BTC","amt":"66","shares":"0.0010","price":"68,372.39","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_24","ymtID":"2024_5_BTC","amt":"30","shares":"0.0004","price":"68,630.41","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_5_24","ymtID":"2024_5_BTC","amt":"100","shares":"0.0015","price":"66,986.17","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_25","ymtID":"2024_5_BTC","amt":"60","shares":"0.0009","price":"69,038.88","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_27","ymtID":"2024_5_BTC","amt":"50","shares":"0.0007","price":"69,435.90","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_27","ymtID":"2024_5_BTC","amt":"60","shares":"0.0009","price":"69,849.75","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_29","ymtID":"2024_5_BTC","amt":"200","shares":"0.0030","price":"67,716.62","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_30","ymtID":"2024_5_BTC","amt":"100","shares":"0.0015","price":"68,394.53","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_30","ymtID":"2024_5_BTC","amt":"20","shares":"0.0003","price":"68,540.89","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_5_30","ymtID":"2024_5_BTC","amt":"50","shares":"0.0007","price":"68,925.20","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_6_2","ymtID":"2024_6_BTC","amt":"25","shares":"0.0004","price":"68,332.30","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_6_3","ymtID":"2024_6_BTC","amt":"40","shares":"0.0006","price":"68,656.27","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_6_3","ymtID":"2024_6_BTC","amt":"25","shares":"0.0004","price":"68,843.64","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_6_4","ymtID":"2024_6_BTC","amt":"100","shares":"0.0014","price":"69,531.79","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_6_4","ymtID":"2024_6_BTC","amt":"111","shares":"0.0016","price":"70,584.83","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_6_4","ymtID":"2024_6_BTC","amt":"40","shares":"0.0006","price":"70,742.91","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_6_5","ymtID":"2024_6_BTC","amt":"40","shares":"0.0006","price":"71,094.89","role":""},{"tkr":"BTC","type":"SELL","mode":"Market","ymd":"2024_6_5","ymtID":"2024_6_BTC","amt":"40","shares":"0.0006","price":"71,384.60","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_6_7","ymtID":"2024_6_BTC","amt":"100","shares":"0.0015","price":"67,311.54","role":""},{"tkr":"BTC","type":"BUY","mode":"Limit","ymd":"2024_6_11","ymtID":"2024_6_BTC","amt":"100","shares":"0.0015","price":"66,643.69","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_6_12","ymtID":"2024_6_BTC","amt":"88","shares":"0.0013","price":"68,721.32","role":""},{"tkr":"ETH","type":"BUY","mode":"Market","ymd":"2024_6_13","ymtID":"2024_6_ETH","amt":"88","shares":"0.0253","price":"3,480.68","role":""},{"tkr":"AVAX","type":"BUY","mode":"Market","ymd":"2024_6_13","ymtID":"2024_6_AVAX","amt":"25","shares":"0.8046","price":"31.06","role":""},{"tkr":"DOGE","type":"BUY","mode":"Market","ymd":"2024_6_13","ymtID":"2024_6_DOGE","amt":"25","shares":"176.9400","price":"0.14129","role":""},{"tkr":"ETH","type":"BUY","mode":"Market","ymd":"2024_6_14","ymtID":"2024_6_ETH","amt":"20","shares":"0.0059","price":"3,415.29","role":""},{"tkr":"BTC","type":"BUY","mode":"Market","ymd":"2024_6_14","ymtID":"2024_6_BTC","amt":"88","shares":"0.0013","price":"65,645.92","role":""},{"tkr":"DOGE","type":"BUY","mode":"Market","ymd":"2024_6_14","ymtID":"2024_6_DOGE","amt":"20","shares":"148.0900","price":"0.13499","role":""},{"tkr":"AVAX","type":"BUY","mode":"Market","ymd":"2024_6_14","ymtID":"2024_6_AVAX","amt":"20","shares":"0.6709","price":"29.80","role":""}]
+
+ END EXAMPLE*/
+</script-->
 </body>
 </html>
