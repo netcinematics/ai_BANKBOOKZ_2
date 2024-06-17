@@ -11,187 +11,211 @@
         <meta name="description" content="BnkBkz2_APP">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- <link rel="stylesheet" href=""> -->
+        <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
     </head>
     <style>
-        body{ background:black; color:steelblue; font-size: 1.2em; 
-            padding:1% 10% 1% 10%; font-family: verdana;
-            height: 100%;
-            min-height: 100%;
-            display: flex;
-            flex: 1;
-            flex-direction: column;
-        } 
-        #importTXT{
-            background:black;
-            color:lime;
-            width: 91%;
-            padding: 4%;
-            border-radius: 13px;
-            box-shadow: 0px 0px 8px purple;
-        }
-        #editTXT{
-            background:black;
-            color:lime;
-            width: 91%;
-            padding: 4%;
-            border-radius: 13px;
-        }
-        #CHART_FRAME {
-            padding:4.444%;
-            box-shadow: inset 0px 0px 10px 0px #0404bb;
-        }
-        #GALLERY_FRAME {
-            padding:4.444%;
-            box-shadow: inset 0px 0px 10px 0px #0404bb;
-        }
-        #EDIT_FRAME {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 2% 4% 2% 4%; 
-            box-shadow: inset 0px 0px 10px 0px #0404bb;           
-        }
-        .main_header {
-            background:black;
-            border:solid 1px purple;
-            border-radius: 13px;
-            margin:1%;
-            padding:0.666em;
-            margin-bottom:0.444em;
-            box-shadow: inset 0px 3px 10px purple;
-            display: flex;
-            justify-content: center;   
-            display: flex;
-            flex:0;
-            box-shadow: inset 0px 0px 10px 0px #0404bb;
-        }
-        .main_menu {
-            background:rgb(72, 80, 111);
-            border:solid 1px rgb(0, 128, 45);
-            border-radius: 13px;
-            margin:1%;
-            padding:0.666em 1em 0.666em 1em;
-            margin-bottom:0.444em;
-            box-shadow: inset 0px 3px 10px purple;
-            display: flex;
-            justify-content: space-evenly;
-            max-width: 80%;
-            margin: -1em auto 0.222em auto;
-            font-size: 0.666em;
-            padding: 0.444em;
-            display: flex;
-            flex:0;
-        }
-        .MAIN_VIEW {
-            background:black;
-            border:solid 1px lime;
-            border-radius: 13px;
-            margin:1%;
-            padding:3%;
-            margin-top:0.444%;
-            margin-bottom:0.444%;
-            box-shadow: inset 0px 0px 7px lime;
-            display: flex;
-            justify-content: center;      
-            height: 100%;
-            min-height: 100%;      
-            flex:1;
-        }
-        .main_footer {
-            background:black;
-            border:solid 1px cyan;
-            border-radius: 13px;
-            margin:1%;
-            padding:0.666em;
-            margin-top:0.444em;
-            box-shadow: inset 0px -1px 8px 0px cyan;
-            display: flex;
-            justify-content: space-evenly;
-        }
-        .galleryItem{
-            width: 75%;
-            margin: 1%;
-            padding: 2%;
-            cursor: pointer;
-            border:solid 1px steelblue;
-            border-radius: 13px;
-        }
-        .galleryItem:hover{ box-shadow: inset 0px -1px 8px 0px cyan; }
-        .galleryItem:active{ box-shadow: inset 0px -1px 6px 0px rgb(28, 104, 104); }
-        .BTN{
-            background:grey;
-            border-radius: 8px;
-            border:solid 1px darkslateblue;
-            cursor:pointer;
-            color:cyan;
-            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size:0.888em;
-        }
-        .BTN:hover{border:1px solid steelblue; color:purple}
-        .BTN:active{border:1px solid lime; color:green}
-        @media only screen and (max-width: 800px) { /************* TABLET */
-            body{  background-color: #00070d; padding:2%;        
-            }
-            .BTN{font-size:0.999em;}
-        }  
-        @media only screen and (max-width: 500px) { /************* PHONE */
-            body{ background-color: #07000c; padding:1%;
-            }
-            .BTN{font-size:1em;}
-        }
-      /* CUSTOM SCROLLBAR************************************************/
-        .scrollBarV {height:97%; overflow-x:scroll; background:#010111; border: 1px steelblue solid; border-radius:13px;  }
-        .scrollBarV::-webkit-scrollbar-track { background-color: #010213;  border-radius: 13px; }
-        .scrollBarV::-webkit-scrollbar { width: 0.666em; height: 100%; }
-        .scrollBarV::-webkit-scrollbar-thumb { background-color: #04223c; border-radius: 13px;
-        background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, transparent 26%, transparent 51%, rgba(255, 255, 255, -0.4) 51%, rgba(255, 255, 255, 0.6) 74%, transparent 74%, transparent);
-        }
-      /* CUSTOM CHECKBOX *************************************************/
-        .checkboxFrame {
-            display:flex;position:relative;padding: 0em 0em 0.666em 0em;margin: 1em 1em 1em 1em;
-            cursor: pointer;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        .checkboxFrame input {/* Hide the browser's default checkbox */
-            position: absolute;opacity: 0;cursor: pointer;height: 0;width: 0;
-        }      
-        .checkmark {
-            border:1px solid lime;border-radius:13px;position: absolute;
-            top: 0;left: 0;height: 10px;width: 10px;
-            background-color: black; box-shadow: 0px 2px 6px 1px #010191;  
-        }
-        .checkboxFrame:hover input ~ .checkmark {
-            background-color: #014601;
-        }
-        .checkboxFrame input:checked ~ .checkmark {
-            background-color: steelblue;
-        }
-        .checkmark:after {
-            content: "";
-            position: absolute;
-            display: none;
-        }
-
-        /* Show the checkmark when checked */
-        .checkboxFrame input:checked ~ .checkmark:after {
-            display: block;
-        }
-
-        /* Style the checkmark/indicator */
-        .checkboxFrame .checkmark:after {
-            left: 4px;
-            top: -1px;
-            width: 2px;
-            height: 6px;
-            border: solid #014601;
-            border-width: 0 3px 3px 0;
-            -webkit-transform: rotate(45deg);
-            -ms-transform: rotate(45deg);
-            transform: rotate(45deg);
-        }
+body{ background:black; color:steelblue; font-size: 1.2em; 
+    padding:1% 10% 1% 10%; font-family: verdana;
+    height: 100%;
+    min-height: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+} 
+#importTXT{
+    background:black;
+    color:lime;
+    width: 91%;
+    padding: 4%;
+    border-radius: 13px;
+    box-shadow: 0px 0px 8px purple;
+}
+#editTXT{
+    background:black;
+    color:lime;
+    width: 91%;
+    padding: 4%;
+    border-radius: 13px;
+}
+#CHART_FRAME {
+    padding:4.444%;
+    box-shadow: inset 0px 0px 10px 0px #0404bb;
+}
+#GALLERY_FRAME {
+    padding:4.444%;
+    box-shadow: inset 0px 0px 10px 0px #0404bb;
+}
+#EDIT_FRAME {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2% 4% 2% 4%; 
+    box-shadow: inset 0px 0px 10px 0px #0404bb;           
+}
+.main_header {
+    background:black;
+    border:solid 1px purple;
+    border-radius: 13px;
+    margin:1%;
+    padding:0.666em;
+    margin-bottom:0.444em;
+    box-shadow: inset 0px 3px 10px purple;
+    display: flex;
+    justify-content: center;   
+    display: flex;
+    flex:0;
+    box-shadow: inset 0px 0px 10px 0px #0404bb;
+}
+.main_menu {
+    background:rgb(72, 80, 111);
+    border:solid 1px rgb(0, 128, 45);
+    border-radius: 13px;
+    margin:1%;
+    padding:0.666em 1em 0.666em 1em;
+    margin-bottom:0.444em;
+    box-shadow: inset 0px 3px 10px purple;
+    display: flex;
+    justify-content: space-evenly;
+    max-width: 80%;
+    margin: -1em auto 0.222em auto;
+    font-size: 0.666em;
+    padding: 0.444em;
+    display: flex;
+    flex:0;
+}
+.MAIN_VIEW {
+    background:black;
+    border:solid 1px lime;
+    border-radius: 13px;
+    margin:1%;
+    padding:3%;
+    margin-top:0.444%;
+    margin-bottom:0.444%;
+    box-shadow: inset 0px 0px 7px lime;
+    display: flex;
+    justify-content: center;      
+    height: 100%;
+    min-height: 100%;      
+    flex:1;
+}
+.main_footer {
+    background:black;
+    border:solid 1px cyan;
+    border-radius: 13px;
+    margin:1%;
+    padding:0.666em;
+    margin-top:0.444em;
+    box-shadow: inset 0px -1px 8px 0px cyan;
+    display: flex;
+    justify-content: space-evenly;
+}
+.galleryItem{
+    width: 75%;
+    margin: 1%;
+    padding: 2%;
+    cursor: pointer;
+    border:solid 1px steelblue;
+    border-radius: 13px;
+}
+.galleryItem:hover{ box-shadow: inset 0px -1px 8px 0px cyan; }
+.galleryItem:active{ box-shadow: inset 0px -1px 6px 0px rgb(28, 104, 104); }
+.BTN{
+    background:grey;
+    border-radius: 8px;
+    border:solid 1px darkslateblue;
+    cursor:pointer;
+    color:cyan;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size:0.888em;
+}
+.BTN:hover{border:1px solid steelblue; color:purple}
+.BTN:active{border:1px solid lime; color:green}
+@media only screen and (max-width: 800px) { /************* TABLET */
+    body{  background-color: #00070d; padding:2%;        
+    }
+    .BTN{font-size:0.999em;}
+}  
+@media only screen and (max-width: 500px) { /************* PHONE */
+    body{ background-color: #07000c; padding:1%;
+    }
+    .BTN{font-size:1em;}
+}
+/* CUSTOM SCROLLBAR************************************************/
+.scrollBarV {height:97%; overflow-x:scroll; background:#010111; border: 1px steelblue solid; border-radius:13px;  }
+.scrollBarV::-webkit-scrollbar-track { background-color: #010213;  border-radius: 13px; }
+.scrollBarV::-webkit-scrollbar { width: 0.666em; height: 100%; }
+.scrollBarV::-webkit-scrollbar-thumb { background-color: #04223c; border-radius: 13px;
+background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, transparent 26%, transparent 51%, rgba(255, 255, 255, -0.4) 51%, rgba(255, 255, 255, 0.6) 74%, transparent 74%, transparent);
+}
+/* CUSTOM CHECKBOX *************************************************/
+.checkboxFrame {
+    display:flex;position:relative;padding: 0em 0em 0.666em 0em;margin: 1em 1em 1em 1em;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.checkboxFrame input {/* Hide the browser's default checkbox */
+    position: absolute;opacity: 0;cursor: pointer;height: 0;width: 0;
+}      
+.checkmark {
+    border:1px solid lime;border-radius:13px;position: absolute;
+    top: 0;left: 0;height: 10px;width: 10px;
+    background-color: black; box-shadow: 0px 2px 6px 1px #010191;  
+}
+.checkboxFrame:hover input ~ .checkmark { background-color: #014601;}
+.checkboxFrame input:checked ~ .checkmark {  background-color: steelblue;}
+.checkmark:after {content: "";position: absolute;display: none;}
+.checkboxFrame input:checked ~ .checkmark:after { display: block;}
+.checkboxFrame .checkmark:after {left: 4px;top: -1px;width: 2px;height: 6px;
+    border: solid #014601;border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+/**END CUSTOM CHECKBOX******************************************************/
+/** CHARTJS ***************************************************************/
+.chartSELECTOR {background:steelblue;border-radius: 10px;border: 1px solid lime;
+    padding: 0.333%;}
+.chartBTN {background:steelblue;border-radius: 10px;border: 1px solid orangered;
+    padding: 0.666%;}
+.chartBTN:hover{color:aqua;background:black;}
+.chartSELECTOR:hover{color:aqua;background:black;}
+.chartSELECTOR:focus {border-color: teal;
+}/* focus border */
+.chartSELECTOR:focus option:checked {background-color:black;color:limegreen;
+} /* focused item */
+.chartSELECTOR:focus-visible{outline-color: teal;
+} /* focused item */
+/** END CHARTJS ***************************************************************/
+/** CUSTOM EXPANDER ***************************************************************/
+.expanderROW{font-family: monospace;margin:2%4%;width:86%;;border-radius: 44%;
+    border: solid 1px #01092e;padding: 0.22em 2em;
+}
+.MinMaxBTN{color:aqua;background:black;border:solid 1px seagreen;
+    width: 1.444em;text-align: center;border-radius: 50%;box-shadow: 1px 1px 1px teal;
+    position:absolute;
+    /* right:8%; top:10%; */
+    right:7%; top:90px;
+    cursor:pointer;
+}
+.MinMaxBTN2{color:aqua;background:black;border:solid 1px seagreen;
+    width: 1.444em;text-align: center;border-radius: 50%;box-shadow: 1px 1px 1px teal;
+    position:absolute;
+    /* right:8%; top:10%; */
+    right:8%; top:10%;
+    cursor:pointer;
+}
+.expandCollapseBTN2{color:aqua;background:black;border:solid 1px seagreen;
+    width: 1.444em;text-align: center;border-radius: 50%;box-shadow: 1px 1px 1px teal;
+    float:right; cursor:pointer;
+}
+.expandCollapseBTN2:hover{color:cyan;background:darkblue;border:solid 1px teal;}
+.expandCollapseBTN2:active{color:cyan;background:darkslategrey;border:solid 1px teal;}
+/** END CUSTOM EXPANDER ***************************************************************/
 
 </style>
 <body>
@@ -247,8 +271,16 @@
             if(!ai_bankbookz_2){ ai_bankbookz_2_LOAD_MOCK_DATA(); }
         } catch(e){ ai_bankbookz_2_LOAD_MOCK_DATA(); }
     }; ai_bankbookz_2_init();
-    //****************************END ai_bankbookz_2_matrix
-    //****************************START DATASET LOAD
+    //****************************END ai_bankbookz_2_matrix************************
+    //****************************CHART_ENGINE*******************************
+    const run_CHART_ENGINE=()=>{
+
+    let chart_view = `
+    `;
+        return chart_view;
+    }  
+    //****************************END CHART_ENGINE*******************************
+    //****************************GALLERY*******************************
     const getDataGallery = ()=>{
         ai_bankbookz_2 = JSON.parse(localStorage.ai_bankbookz_2);
         let data_gallery = [
@@ -282,8 +314,8 @@
     let go_CHART_VIEW_Click = ()=>{
         let dynamic_height = '20em';
         dynamic_height = screenHeight-300+'px';
-        debugger;
         let chartTXT = "..."
+        let genr8CHARTS = run_CHART_ENGINE();
         if(CHART_SELECTIONS&&CHART_SELECTIONS.length&&chartTXT){
             for(var i=0; i<CHART_SELECTIONS.length;i++){
                 chartTXT+=CHART_SELECTIONS[i]
@@ -296,9 +328,78 @@
                 <span>CHARTS</span>
                 <button class="BTN" onclick="go_GALLERY_VIEW_Click()">SELECT</button>
                 </header>
-            <section style="display:flex;">
-${chartTXT}
-            </section>
+  
+        <h1 style="font-size:0.888em; border:solid 1px purple;border-radius:22px;
+            padding:1em; margin:1%;box-shadow: 1px 1px 1px blue;">
+            Chart.js | Advanced_Financial_Vis | for ai_timeseries</h1>
+        
+        <aside  id="chartMaxMinBTN" class="expandCollapseBTN2 MinMaxBTN2" onclick="minMaxExpandCollapseClick()"
+            >✴</aside>
+        <canvas id="finChart" style="font-size:0.888em; border:solid 1px limegreen; border-radius:22px;
+        padding:1em; margin:0.222em;box-shadow: inset -1px -1px 2px 1px steelblue;"></canvas>
+        <header class="expanderROW">TKR_Query:
+            <aside  id="queryVIEWBTN" class="expandCollapseBTN2" onclick="queryExpandCollapseClick()"
+                >✴</aside>
+        </header>
+        <section id="queryVIEW" style="font-size:0.888em; border:solid 1px cyan; border-radius:22px;
+        padding:3%; margin:2%; line-height: 2.888em;">
+            <select id="tkrSelect1" class="chartSELECTOR">
+                <option value="true" selected>NVDA</option>
+                <option value="false">AMZN</option>
+                <option value="false">COIN</option>
+            </select>
+            <button id="getDataBTN" disabled class="chartBTN">Get_DATA</button>
+            <button id="importTXNZBTN" disabled class="chartBTN">Enter_TXNZ</button>
+        </section>
+        <header class="expanderROW">TKR_Metadata:
+            <aside  id="metadataVIEWBTN" class="expandCollapseBTN2" onclick="metadataExpandCollapseClick()"
+                >✴</aside>
+        </header>
+        <section id="metadataVIEW" style="font-size:0.888em; 
+        border:solid 1px cyan; border-radius:22px;
+        padding:3%; margin:2%; line-height: 2.888em;">
+            Month NET:
+            <input id="type2" class="chartSELECTOR"></input>
+            AVG AMT:
+            <input id="scale-type2" class="chartSELECTOR"></input>
+            GAIN %:
+            <input id="color-scheme2" class="chartSELECTOR"></input>
+        </section>
+        <header class="expanderROW">TKR_Config:
+            <aside  id="configVIEWBTN" class="expandCollapseBTN2" onclick="configExpandCollapseClick()"
+            >✴</aside>
+        </header>
+        <section id="configVIEW" style="font-size:0.888em; border:solid 1px cyan; border-radius:22px;
+        padding:3%; margin:2%; line-height: 2.888em;">
+            Bar Type:
+            <select id="type" class="chartSELECTOR">
+                <option value="candlestick" selected>Candlestick</option>
+                <option value="ohlc">OHLC</option>
+            </select>
+            Scale Type:
+            <select id="scale-type" class="chartSELECTOR">
+                <option value="linear">Linear</option>
+                <option value="logarithmic" selected>Logarithmic</option>
+            </select>
+            Color Scheme:
+            <select id="color-scheme" class="chartSELECTOR">
+                <option value="muted">Muted</option>
+                <option value="neon" selected>Neon</option>
+            </select>
+            Border:
+            <select id="border" class="chartSELECTOR">
+                <option value="true" selected>Yes</option>
+                <option value="false">No</option>
+            </select>
+            Mixed:
+            <select id="mixed" class="chartSELECTOR">
+                <option value="true" selected>Yes</option>
+                <option value="false" >No</option>
+            </select>
+            <!-- <button id="updateBtn" class="chartBTN">Update</button> -->
+            <button id="randomizeData" class="chartBTN">Randomize Data</button>
+        </section>
+
             
         </article>`
         MAIN_VIEW.innerHTML = chart_view;
