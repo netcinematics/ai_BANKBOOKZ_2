@@ -39,9 +39,10 @@ body{ background:black; color:steelblue; font-size: 1.2em;
     padding: 4%;
     border-radius: 13px;
 }
-#CHART_FRAME {
+#CHART_VIEW {
     padding:4.444%;
     box-shadow: inset 0px 0px 10px 0px #0404bb;
+    height:100%;flex:1;display:flex;width:90%;flex-direction: column;
 }
 #GALLERY_FRAME {
     padding:4.444%;
@@ -130,6 +131,8 @@ body{ background:black; color:steelblue; font-size: 1.2em;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size:0.888em;
 }
+.hiddenTab{ display:none !important;}
+/**************RESPONSIVE WEB DESIGN *******************/
 .BTN:hover{border:1px solid steelblue; color:purple}
 .BTN:active{border:1px solid lime; color:green}
 @media only screen and (max-width: 800px) { /************* TABLET */
@@ -224,7 +227,85 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
         <button class="BTN" onclick="go_CHART_VIEW_Click()">CHART</button>
         <button class="BTN" style="margin:0 1em 0 1em;" onclick="go_IMPORT_VIEW_Click()">IMPORT</button>
         <button class="BTN" onclick="go_GALLERY_VIEW_Click()">DATA</button></footer></aside>
-    <section id="MAIN_VIEW" class="MAIN_VIEW">~ Loading...</section>
+    <section id="MAIN_VIEW" class="MAIN_VIEW hiddenTab">~ Loading...</section>
+    <article id="CHART_VIEW" class="scrollBarV">
+        <header style="margin-bottom:1em;display:flex;justify-content: space-between;">
+            <span>CHARTS</span>
+            <button class="BTN" onclick="go_GALLERY_VIEW_Click()">SELECT</button>
+            </header>
+    
+    <!--aside  id="chartMaxMinBTN" class="expandCollapseBTN2 MinMaxBTN2" onclick="minMaxExpandCollapseClick()"
+        >✴</aside-->
+    <canvas id="finChart" style="font-size:0.888em; border:solid 1px limegreen; border-radius:22px;
+    padding:1em; margin:0.222em;width: 88%;"></canvas>
+    <header class="expanderROW">TKR_Query:
+        <aside  id="queryVIEWBTN" class="expandCollapseBTN2" onclick="queryExpandCollapseClick()"
+            >✴</aside>
+    </header>
+    <section id="queryVIEW" style="font-size:0.888em; border:solid 1px cyan; border-radius:22px;
+    padding:3%; margin:2%; line-height: 2.888em;">
+        <select id="tkrSelect1" class="chartSELECTOR">
+            <option value="true" selected>NVDA</option>
+            <option value="false">AMZN</option>
+            <option value="false">COIN</option>
+        </select>
+        <button id="getDataBTN" disabled class="chartBTN">Get_DATA</button>
+        <button id="importTXNZBTN" disabled class="chartBTN">Enter_TXNZ</button>
+    </section>
+    <header class="expanderROW">TKR_Metadata:
+        <aside  id="metadataVIEWBTN" class="expandCollapseBTN2" onclick="metadataExpandCollapseClick()"
+            >✴</aside>
+    </header>
+    <section id="metadataVIEW" style="font-size:0.888em; 
+    border:solid 1px cyan; border-radius:22px;
+    padding:3%; margin:2%; line-height: 2.888em;">
+        Month NET:
+        <input id="type2" class="chartSELECTOR"></input>
+        AVG AMT:
+        <input id="scale-type2" class="chartSELECTOR"></input>
+        GAIN %:
+        <input id="color-scheme2" class="chartSELECTOR"></input>
+    </section>
+    <header class="expanderROW">TKR_Config:
+        <aside  id="configVIEWBTN" class="expandCollapseBTN2" onclick="configExpandCollapseClick()"
+        >✴</aside>
+    </header>
+    <section id="configVIEW" style="font-size:0.888em; border:solid 1px cyan; border-radius:22px;
+    padding:3%; margin:2%; line-height: 2.888em;">
+        Bar Type:
+        <select id="type" class="chartSELECTOR">
+            <option value="candlestick" selected>Candlestick</option>
+            <option value="ohlc">OHLC</option>
+        </select>
+        Scale Type:
+        <select id="scale-type" class="chartSELECTOR">
+            <option value="linear">Linear</option>
+            <option value="logarithmic" selected>Logarithmic</option>
+        </select>
+        Color Scheme:
+        <select id="color-scheme" class="chartSELECTOR">
+            <option value="muted">Muted</option>
+            <option value="neon" selected>Neon</option>
+        </select>
+        Border:
+        <select id="border" class="chartSELECTOR">
+            <option value="true" selected>Yes</option>
+            <option value="false">No</option>
+        </select>
+        Mixed:
+        <select id="mixed" class="chartSELECTOR">
+            <option value="true" selected>Yes</option>
+            <option value="false" >No</option>
+        </select>
+        <!-- <button id="updateBtn" class="chartBTN">Update</button> -->
+        <button id="randomizeData" class="chartBTN">Randomize Data</button>
+    </section>
+
+        
+    </article>
+
+
+
     <legal style="color:darkslategray;font-size: 0.444em;position:absolute;bottom:0em;">
         <div style="margin-top:0;margin-bottom:1em;">
             2020 - <span id="dateTXTStamp"></span> © NetCinematics llc. All rights reserved.
@@ -248,7 +329,12 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
     // console.log("Screen Height:", screenHeight, "px");
     // **** END HEIGHT **************************************************
     // **** VIEWS *******************************************************
+    const CHART_VIEW = document.getElementById("CHART_VIEW");
     const MAIN_VIEW = document.getElementById("MAIN_VIEW");
+
+    MAIN_VIEW.classList.add('hiddenTab')     //TAB SWITCH
+    CHART_VIEW.classList.remove('hiddenTab') 
+
     const GALLERY_FRAME = document.getElementById("GALLERY_FRAME");
     let EDIT_YMT_RECORD_ID = ''; //persist record editing between views.
     let CHART_SELECTIONS = []; //persist chart selections between views.    
@@ -313,7 +399,9 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
     //****************************END DATASET LOAD
     let go_CHART_VIEW_Click = ()=>{
         let dynamic_height = '20em';
-        dynamic_height = screenHeight-300+'px';
+        dynamic_height = screenHeight/4;
+        CHART_VIEW.style.maxHeight=(dynamic_height*3)+'px';
+
         let chartTXT = "..."
         let genr8CHARTS = run_CHART_ENGINE();
         if(CHART_SELECTIONS&&CHART_SELECTIONS.length&&chartTXT){
@@ -322,87 +410,11 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
             }
         }
 
-        let chart_view = 
-        `<article id="CHART_FRAME" style="height:${dynamic_height};width:90%;" class="scrollBarV">
-            <header style="margin-bottom:1em;display:flex;justify-content: space-between;">
-                <span>CHARTS</span>
-                <button class="BTN" onclick="go_GALLERY_VIEW_Click()">SELECT</button>
-                </header>
-  
-        <h1 style="font-size:0.888em; border:solid 1px purple;border-radius:22px;
-            padding:1em; margin:1%;box-shadow: 1px 1px 1px blue;">
-            Chart.js | Advanced_Financial_Vis | for ai_timeseries</h1>
-        
-        <aside  id="chartMaxMinBTN" class="expandCollapseBTN2 MinMaxBTN2" onclick="minMaxExpandCollapseClick()"
-            >✴</aside>
-        <canvas id="finChart" style="font-size:0.888em; border:solid 1px limegreen; border-radius:22px;
-        padding:1em; margin:0.222em;box-shadow: inset -1px -1px 2px 1px steelblue;"></canvas>
-        <header class="expanderROW">TKR_Query:
-            <aside  id="queryVIEWBTN" class="expandCollapseBTN2" onclick="queryExpandCollapseClick()"
-                >✴</aside>
-        </header>
-        <section id="queryVIEW" style="font-size:0.888em; border:solid 1px cyan; border-radius:22px;
-        padding:3%; margin:2%; line-height: 2.888em;">
-            <select id="tkrSelect1" class="chartSELECTOR">
-                <option value="true" selected>NVDA</option>
-                <option value="false">AMZN</option>
-                <option value="false">COIN</option>
-            </select>
-            <button id="getDataBTN" disabled class="chartBTN">Get_DATA</button>
-            <button id="importTXNZBTN" disabled class="chartBTN">Enter_TXNZ</button>
-        </section>
-        <header class="expanderROW">TKR_Metadata:
-            <aside  id="metadataVIEWBTN" class="expandCollapseBTN2" onclick="metadataExpandCollapseClick()"
-                >✴</aside>
-        </header>
-        <section id="metadataVIEW" style="font-size:0.888em; 
-        border:solid 1px cyan; border-radius:22px;
-        padding:3%; margin:2%; line-height: 2.888em;">
-            Month NET:
-            <input id="type2" class="chartSELECTOR"></input>
-            AVG AMT:
-            <input id="scale-type2" class="chartSELECTOR"></input>
-            GAIN %:
-            <input id="color-scheme2" class="chartSELECTOR"></input>
-        </section>
-        <header class="expanderROW">TKR_Config:
-            <aside  id="configVIEWBTN" class="expandCollapseBTN2" onclick="configExpandCollapseClick()"
-            >✴</aside>
-        </header>
-        <section id="configVIEW" style="font-size:0.888em; border:solid 1px cyan; border-radius:22px;
-        padding:3%; margin:2%; line-height: 2.888em;">
-            Bar Type:
-            <select id="type" class="chartSELECTOR">
-                <option value="candlestick" selected>Candlestick</option>
-                <option value="ohlc">OHLC</option>
-            </select>
-            Scale Type:
-            <select id="scale-type" class="chartSELECTOR">
-                <option value="linear">Linear</option>
-                <option value="logarithmic" selected>Logarithmic</option>
-            </select>
-            Color Scheme:
-            <select id="color-scheme" class="chartSELECTOR">
-                <option value="muted">Muted</option>
-                <option value="neon" selected>Neon</option>
-            </select>
-            Border:
-            <select id="border" class="chartSELECTOR">
-                <option value="true" selected>Yes</option>
-                <option value="false">No</option>
-            </select>
-            Mixed:
-            <select id="mixed" class="chartSELECTOR">
-                <option value="true" selected>Yes</option>
-                <option value="false" >No</option>
-            </select>
-            <!-- <button id="updateBtn" class="chartBTN">Update</button> -->
-            <button id="randomizeData" class="chartBTN">Randomize Data</button>
-        </section>
+        CHART_VIEW.classList.remove('hiddenTab') 
+        MAIN_VIEW.classList.add('hiddenTab')     //TAB SWITCH
+        // let chart_view = '<h1>hi</hi>'
 
-            
-        </article>`
-        MAIN_VIEW.innerHTML = chart_view;
+        // MAIN_VIEW.innerHTML = chart_view;
 
     }; setTimeout(()=>{ go_CHART_VIEW_Click(); },1000);
 
@@ -425,6 +437,8 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
                 <button class="BTN" onclick="import_BTNClick()">IMPORT</button>
             </footer>   
         </section>`
+        MAIN_VIEW.classList.remove('hiddenTab')     //TAB SWITCH
+        CHART_VIEW.classList.add('hiddenTab') 
     }
     let go_GALLERY_VIEW_Click = ()=>{
         let dynamic_height = '20em';
@@ -456,6 +470,8 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
             <header style="margin-bottom:1em;">DATASET</header>
             ${selected_data_view}
         </section>`
+        MAIN_VIEW.classList.remove('hiddenTab')     //TAB SWITCH
+        CHART_VIEW.classList.add('hiddenTab') 
     }
 
     let back_BTNClick = ()=>{    
@@ -704,5 +720,559 @@ getTXNZData();
 
  END EXAMPLE*/
 </script-->
+<script  async defer>//**** CHARTJS INSTANCE ************************************
+    //---DATA_QUERY----------------------------------
+    const tkrSelect1 = document.getElementById('tkrSelect1');
+    tkrSelect1.addEventListener('change', ()=>{
+        getRandomData(initialDateStr, barData);
+        updateChart();         
+    });
+    //---METADATA----------------------------------
+    //---EXPAND COLLAPSE BTNs----------------------------------
+    const queryVIEW = document.getElementById('queryVIEW')
+    const queryVIEWBTN = document.getElementById('queryVIEWBTN')
+    const metadataVIEW = document.getElementById('metadataVIEW')
+    const metadataVIEWBTN = document.getElementById('metadataVIEWBTN')
+    const configVIEW = document.getElementById('configVIEW')
+    const configVIEWBTN = document.getElementById('configVIEWBTN')
+    const chartMaxMinBTN = document.getElementById('chartMaxMinBTN')
+    //---END EXPAND COLLAPSE BTNs------------------------------
+    /************************************************\
+     * - ai_viewz_MATRIX
+     *  - ability to save quarterly NOTES in localstorage
+    \************************************************/
+    let ai_viewz = {};
+    // const ai_viewz_LOAD_MOCK_DATA=()=>{ //READ
+    // ai_viewz = {"ticks":[{"tick":"NVDA","price":"940","ath":"870","ath_ymd":"2024_03_17","price_ymd":"2024_03_23"},{"tick":"GOOGL","price":"150","ath":"150","ath_ymd":"2021_11_19","price_ymd":"2024_03_23"},{"tick":"COIN","price":"255","ath":"261","ath_ymd":"2024_03_17","price_ymd":"2024_03_23"},{"tick":"V","price":"283","ath":"283","ath_ymd":"2024_02_26","price_ymd":"2024_03_23"},{"tick":"COST","price":"734","ath":"737","ath_ymd":"2024_02_26","price_ymd":"2024_03_23"},{"tick":"AMD","price":"179","ath":"199","ath_ymd":"2024_03_26","price_ymd":"2024_03_23"},{"tick":"AMZN","price":"178","ath":"172","ath_ymd":"2024_03_10","price_ymd":"2024_03_23"},{"tick":"HOOD","price":"18","ath":"16","price_ymd":"2024_03_23"},{"tick":"IBIT","price":"36","ath":"41","price_ymd":"2024_03_23"},{"tick":"BTC","price":"65111","ath":"73000","ath_ymd":"2024_03_13","price_ymd":"2024_3_22"}],"spots":[{"tick":"NVDA","amount":"100","spot_at":"486","ymd":"2023_11_22","role":"WATCH"},{"tick":"NVDA","amount":"200","spot_at":"494","ymd":"2023_11_17","role":"LONG"},{"tick":"NVDA","amount":"200","spot_at":"412","ymd":"2023_10_20"},{"tick":"NVDA","amount":"300","spot_at":"459","ymd":"2023_10_10","role":"LONG"},{"tick":"MDB","amount":"200","spot_at":"333","ymd":"2023_09_21","role":"WATCH"},{"tick":"V","amount":"200","spot_at":"232","ymd":"2023_10_24","role":"HOLD"},{"tick":"GOOGL","amount":"500","spot_at":"130","ymd":"2023_09_29","role":"TRIM"},{"tick":"QQQ","amount":"500","spot_at":"370","ymd":"2023_11_09","role":"TRIM"},{"tick":"XLK","amount":"300","spot_at":"168","ymd":"2023_09_18","role":"TRIM"},{"tick":"MSFT","amount":"100","spot_at":"330","ymd":"2023_10_26","role":"HOLD"},{"tick":"MSFT","amount":"200","spot_at":"316","ymd":"2023_10_02","role":"TRIM"},{"tick":"AMD","amount":"200","spot_at":"102","ymd":"2023_10_02","role":"LONG"},{"tick":"TSLA","amount":"100","spot_at":"235","ymd":"2023_11_30","role":"PAD"},{"tick":"AMZN","amount":"2000","spot_at":"163","ymd":"2023_11_30","role":"SAFE"}],"asset_expanded":false,"spot_expanded":false,"margin_expanded":false,"caps_expanded":false,"eventz_expanded":false,"totalz_expanded":false,"quick_expanded":false,"storyz_expanded":false,"totalz_computed":false,"compute_TGT_Totalz":[]}
+    // }
+    const ai_viewz_init=()=>{ //READ from LOCAL STORAGE
+        ai_viewz = (localStorage.ai_viewz)?
+            JSON.parse( localStorage.ai_viewz ):{};
+    // ai_viewz = null; //DEV: load mock data
+    // if(!ai_viewz){ ai_viewz_LOAD_MOCK_DATA(); }
+    }; ai_viewz_init();
+    //****************************END ai_viewz_matrix    
+    const displayQueryView = ()=> {
+        if(ai_viewz.query_expanded){
+            queryVIEWBTN.innerHTML = '✧'
+            queryVIEW.style.display = 'block'
+        } else {
+            queryVIEWBTN.innerHTML = '✴'
+            queryVIEW.style.display = 'none'
+        }
+    }; displayQueryView();
+    const queryExpandCollapseClick = ()=>{
+        ai_viewz.query_expanded = !ai_viewz.query_expanded;
+        localStorage.ai_viewz = JSON.stringify(ai_viewz); //SAVE to LOCAL STORAGE 
+        displayQueryView(); //RELOAD VIEW. 
+    }    
+    const displayMetaDataView = ()=> {
+        if(ai_viewz.metadata_expanded){
+            metadataVIEWBTN.innerHTML = '✧'
+            metadataVIEW.style.display = 'block'
+        } else {
+            metadataVIEWBTN.innerHTML = '✴'
+            metadataVIEW.style.display = 'none'
+        }
+    }; displayMetaDataView();
+    const metadataExpandCollapseClick = ()=>{
+        ai_viewz.metadata_expanded = !ai_viewz.metadata_expanded;
+        localStorage.ai_viewz = JSON.stringify(ai_viewz); //SAVE to LOCAL STORAGE
+        displayMetaDataView(); //RELOAD VIEW. 
+    }    
+    const displayConfigView = ()=> {
+        if(ai_viewz.config_expanded){
+            configVIEWBTN.innerHTML = '✧'
+            configVIEW.style.display = 'block'
+        } else {
+            configVIEWBTN.innerHTML = '✴'
+            configVIEW.style.display = 'none'
+        }
+    }; displayConfigView();
+    const configExpandCollapseClick = ()=>{
+        ai_viewz.config_expanded = !ai_viewz.config_expanded;
+        localStorage.ai_viewz = JSON.stringify(ai_viewz); //SAVE to LOCAL STORAGE 
+        displayConfigView(); //RELOAD VIEW. 
+    }  
+    const minMaxExpandCollapseClick = ()=>{
+        if(!ai_viewz.chart_expanded){
+            chartMaxMinBTN.innerHTML = '✧'
+        } else {
+            chartMaxMinBTN.innerHTML = '✴'
+        }        
+        ai_viewz.chart_expanded = !ai_viewz.chart_expanded;
+        localStorage.ai_viewz = JSON.stringify(ai_viewz); //SAVE to LOCAL STORAGE 
+        initChart();  //RELOAD VIEW. 
+        updateChart();  //RELOAD VIEW. 
+    }        
+</script>
+<script>
+/*!
+* @license
+* chartjs-chart-financial
+* http://chartjs.org/
+* Version: 0.2.0
+*
+* Copyright 2024 Chart.js Contributors
+* Released under the MIT license
+* https://github.com/chartjs/chartjs-chart-financial/blob/master/LICENSE.md
+*/
+(function (global, factory) {
+typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('chart.js'), require('chart.js/helpers')) :
+typeof define === 'function' && define.amd ? define(['chart.js', 'chart.js/helpers'], factory) :
+(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Chart, global.Chart.helpers));
+})(this, (function (chart_js, helpers) { 'use strict';
+
+/**
+ * This class is based off controller.bar.js from the upstream Chart.js library
+ */
+class FinancialController extends chart_js.BarController {
+    static overrides = {
+    label: '',
+    parsing: false,
+    hover: {
+        mode: 'label'
+    },
+    animations: {
+        numbers: {
+        type: 'number',
+        properties: ['x', 'y', 'base', 'width', 'open', 'high', 'low', 'close']
+        }
+    },
+    scales: {
+        x: {
+        type: 'timeseries',
+        offset: true,
+        ticks: {
+            major: {
+            enabled: true,
+            },
+            source: 'data',
+            maxRotation: 0,
+            autoSkip: true,
+            autoSkipPadding: 75,
+            sampleSize: 100
+        },
+            grid:{color:'rgba(0,10,23, 1)', // Set the grid color (adjust transparency as needed)
+            }        
+        },
+        y: {
+        type: 'linear',
+            grid:{color:'rgba(0,10,23, 1)', // Set the grid color (adjust transparency as needed)
+            }        
+        }
+    },
+    plugins: {
+        tooltip: {
+        intersect: false,
+        mode: 'index',
+        callbacks: {
+            label(ctx) {
+            const point = ctx.parsed;
+            if (!helpers.isNullOrUndef(point.y)) {
+                return chart_js.defaults.plugins.tooltip.callbacks.label(ctx);
+            }
+            const {o, h, l, c} = point;
+            return `O: ${o}  H: ${h}  L: ${l}  C: ${c}`;
+            }
+        }
+        }
+    }
+    };
+    getLabelAndValue(index) {
+    const me = this;
+    const parsed = me.getParsed(index);
+    const axis = me._cachedMeta.iScale.axis;
+    const {o, h, l, c} = parsed;
+    const value = `O: ${o}  H: ${h}  L: ${l}  C: ${c}`;
+    return {
+        label: `${me._cachedMeta.iScale.getLabelForValue(parsed[axis])}`,
+        value
+    };
+    }
+    getUserBounds(scale) {
+    const {min, max, minDefined, maxDefined} = scale.getUserBounds();
+    return {
+        min: minDefined ? min : Number.NEGATIVE_INFINITY,
+        max: maxDefined ? max : Number.POSITIVE_INFINITY
+    };
+    }
+    /**
+     * Implement this ourselves since it doesn't handle high and low values
+     * https://github.com/chartjs/Chart.js/issues/7328
+     * @protected
+     */
+    getMinMax(scale) {
+    const meta = this._cachedMeta;
+    const _parsed = meta._parsed;
+    const axis = meta.iScale.axis;
+    const otherScale = this._getOtherScale(scale);
+    const {min: otherMin, max: otherMax} = this.getUserBounds(otherScale);
+    if (_parsed.length < 2) {
+        return {min: 0, max: 1};
+    }
+    if (scale === meta.iScale) {
+        return {min: _parsed[0][axis], max: _parsed[_parsed.length - 1][axis]};
+    }
+    const newParsedData = _parsed.filter(({x}) => x >= otherMin && x < otherMax);
+    let min = Number.POSITIVE_INFINITY;
+    let max = Number.NEGATIVE_INFINITY;
+    for (let i = 0; i < newParsedData.length; i++) {
+        const data = newParsedData[i];
+        min = Math.min(min, data.l);
+        max = Math.max(max, data.h);
+    }
+    return {min, max};
+    }
+    /**
+     * @protected
+     */
+    calculateElementProperties(index, ruler, reset, options) {
+    const me = this;
+    const vscale = me._cachedMeta.vScale;
+    const base = vscale.getBasePixel();
+    const ipixels = me._calculateBarIndexPixels(index, ruler, options);
+    const data = me.chart.data.datasets[me.index].data[index];
+    const open = vscale.getPixelForValue(data.o);
+    const high = vscale.getPixelForValue(data.h);
+    const low = vscale.getPixelForValue(data.l);
+    const close = vscale.getPixelForValue(data.c);
+    return {
+        base: reset ? base : low,
+        x: ipixels.center,
+        y: (low + high) / 2,
+        width: ipixels.size,
+        open,
+        high,
+        low,
+        close
+    };
+    }
+    draw() {
+    const me = this;
+    const chart = me.chart;
+    const rects = me._cachedMeta.data;
+    helpers.clipArea(chart.ctx, chart.chartArea);
+    for (let i = 0; i < rects.length; ++i) {
+        rects[i].draw(me._ctx);
+    }
+    helpers.unclipArea(chart.ctx);
+    }
+}
+/**
+ * Helper function to get the bounds of the bar regardless of the orientation
+ * @param {Rectangle} bar the bar
+ * @param {boolean} [useFinalPosition]
+ * @return {object} bounds of the bar
+ * @private
+ */
+function getBarBounds(bar, useFinalPosition) {
+    const {x, y, base, width, height} = bar.getProps(['x', 'low', 'high', 'width', 'height'], useFinalPosition);
+    let left, right, top, bottom, half;
+    if (bar.horizontal) {
+    half = height / 2;
+    left = Math.min(x, base);
+    right = Math.max(x, base);
+    top = y - half;
+    bottom = y + half;
+    } else {
+    half = width / 2;
+    left = x - half;
+    right = x + half;
+    top = Math.min(y, base); // use min because 0 pixel at top of screen
+    bottom = Math.max(y, base);
+    }
+    return {left, top, right, bottom};
+}
+function inRange(bar, x, y, useFinalPosition) {
+    const skipX = x === null;
+    const skipY = y === null;
+    const bounds = !bar || (skipX && skipY) ? false : getBarBounds(bar, useFinalPosition);
+    return bounds
+        && (skipX || x >= bounds.left && x <= bounds.right)
+        && (skipY || y >= bounds.top && y <= bounds.bottom);
+}
+class FinancialElement extends chart_js.BarElement {
+    static defaults = {
+    backgroundColors: {
+        up: 'rgba(75, 192, 192, 1)',
+        down: 'rgba(255, 99, 132, 1)',
+        unchanged: 'rgba(201, 203, 207,1)',
+    },
+    borderColors: {
+        up: 'rgb(75, 192, 192)',
+        down: 'rgb(255, 99, 132)',
+        unchanged: 'rgb(201, 203, 207)',
+    }
+    };
+    height() {
+    return this.base - this.y;
+    }
+    inRange(mouseX, mouseY, useFinalPosition) {
+    return inRange(this, mouseX, mouseY, useFinalPosition);
+    }
+    inXRange(mouseX, useFinalPosition) {
+    return inRange(this, mouseX, null, useFinalPosition);
+    }
+    inYRange(mouseY, useFinalPosition) {
+    return inRange(this, null, mouseY, useFinalPosition);
+    }
+    getRange(axis) {
+    return axis === 'x' ? this.width / 2 : this.height / 2;
+    }
+    getCenterPoint(useFinalPosition) {
+    const {x, low, high} = this.getProps(['x', 'low', 'high'], useFinalPosition);
+    return {
+        x,
+        y: (high + low) / 2
+    };
+    }
+    tooltipPosition(useFinalPosition) {
+    const {x, open, close} = this.getProps(['x', 'open', 'close'], useFinalPosition);
+    return {
+        x,
+        y: (open + close) / 2
+    };
+    }
+}
+class CandlestickElement extends FinancialElement {
+    static id = 'candlestick';
+    static defaults = {
+    ...FinancialElement.defaults,
+    borderWidth: 1,
+    };
+    draw(ctx) {
+    const me = this;
+    const {x, open, high, low, close} = me;
+    let borderColors = me.options.borderColors;
+    if (typeof borderColors === 'string') {
+        borderColors = {
+        up: borderColors,
+        down: borderColors,
+        unchanged: borderColors
+        };
+    }
+    let borderColor;
+    if (close < open) {
+        borderColor = helpers.valueOrDefault(borderColors ? borderColors.up : undefined, chart_js.defaults.elements.candlestick.borderColors.up);
+        ctx.fillStyle = helpers.valueOrDefault(me.options.backgroundColors ? me.options.backgroundColors.up : undefined, chart_js.defaults.elements.candlestick.backgroundColors.up);
+    } else if (close > open) {
+        borderColor = helpers.valueOrDefault(borderColors ? borderColors.down : undefined, chart_js.defaults.elements.candlestick.borderColors.down);
+        ctx.fillStyle = helpers.valueOrDefault(me.options.backgroundColors ? me.options.backgroundColors.down : undefined, chart_js.defaults.elements.candlestick.backgroundColors.down);
+    } else {
+        borderColor = helpers.valueOrDefault(borderColors ? borderColors.unchanged : undefined, chart_js.defaults.elements.candlestick.borderColors.unchanged);
+        ctx.fillStyle = helpers.valueOrDefault(me.backgroundColors ? me.backgroundColors.unchanged : undefined, chart_js.defaults.elements.candlestick.backgroundColors.unchanged);
+    }
+    ctx.lineWidth = helpers.valueOrDefault(me.options.borderWidth, chart_js.defaults.elements.candlestick.borderWidth);
+    ctx.strokeStyle = borderColor;
+    ctx.beginPath();
+    ctx.moveTo(x, high);
+    ctx.lineTo(x, Math.min(open, close));
+    ctx.moveTo(x, low);
+    ctx.lineTo(x, Math.max(open, close));
+    ctx.stroke();
+    ctx.fillRect(x - me.width / 2, close, me.width, open - close);
+    ctx.strokeRect(x - me.width / 2, close, me.width, open - close);
+    ctx.closePath();
+    }
+}
+class CandlestickController extends FinancialController {
+    static id = 'candlestick';
+    static defaults = {
+    ...FinancialController.defaults,
+    dataElementType: CandlestickElement.id
+    };
+    static defaultRoutes = chart_js.BarController.defaultRoutes;
+    updateElements(elements, start, count, mode) {
+    const reset = mode === 'reset';
+    const ruler = this._getRuler();
+    const {sharedOptions, includeOptions} = this._getSharedOptions(start, mode);
+    for (let i = start; i < start + count; i++) {
+        const options = sharedOptions || this.resolveDataElementOptions(i, mode);
+        const baseProperties = this.calculateElementProperties(i, ruler, reset, options);
+        if (includeOptions) {
+        baseProperties.options = options;
+        }
+        this.updateElement(elements[i], i, baseProperties, mode);
+    }
+    }
+}
+const defaults = chart_js.Chart.defaults;
+class OhlcElement extends FinancialElement {
+    static id = 'ohlc';
+    static defaults = {
+    ...FinancialElement.defaults,
+    lineWidth: 2,
+    armLength: null,
+    armLengthRatio: 0.8
+    };
+    draw(ctx) {
+    const me = this;
+    const {x, open, high, low, close} = me;
+    const armLengthRatio = helpers.valueOrDefault(me.armLengthRatio, defaults.elements.ohlc.armLengthRatio);
+    let armLength = helpers.valueOrDefault(me.armLength, defaults.elements.ohlc.armLength);
+    if (armLength === null) {
+        // The width of an ohlc is affected by barPercentage and categoryPercentage
+        // This behavior is caused by extending controller.financial, which extends controller.bar
+        // barPercentage and categoryPercentage are now set to 1.0 (see controller.ohlc)
+        // and armLengthRatio is multipled by 0.5,
+        // so that when armLengthRatio=1.0, the arms from neighbour ohcl touch,
+        // and when armLengthRatio=0.0, ohcl are just vertical lines.
+        armLength = me.width * armLengthRatio * 0.5;
+    }
+    if (close < open) {
+        ctx.strokeStyle = helpers.valueOrDefault(me.options.borderColors ? me.options.borderColors.up : undefined, defaults.elements.ohlc.borderColors.up);
+    } else if (close > open) {
+        ctx.strokeStyle = helpers.valueOrDefault(me.options.borderColors ? me.options.borderColors.down : undefined, defaults.elements.ohlc.borderColors.down);
+    } else {
+        ctx.strokeStyle = helpers.valueOrDefault(me.options.borderColors ? me.options.borderColors.unchanged : undefined, defaults.elements.ohlc.borderColors.unchanged);
+    }
+    ctx.lineWidth = helpers.valueOrDefault(me.lineWidth, defaults.elements.ohlc.lineWidth);
+    ctx.beginPath();
+    ctx.moveTo(x, high);
+    ctx.lineTo(x, low);
+    ctx.moveTo(x - armLength, open);
+    ctx.lineTo(x, open);
+    ctx.moveTo(x + armLength, close);
+    ctx.lineTo(x, close);
+    ctx.stroke();
+    }
+}
+class OhlcController extends FinancialController {
+    static id = 'ohlc';
+    static defaults = {
+    ...FinancialController.defaults,
+    dataElementType: OhlcElement.id,
+    datasets: {
+        barPercentage: 1.0,
+        categoryPercentage: 1.0
+    }
+    };
+    updateElements(elements, start, count, mode) {
+    const reset = mode === 'reset';
+    const ruler = this._getRuler();
+    const {sharedOptions, includeOptions} = this._getSharedOptions(start, mode);
+    for (let i = start; i < start + count; i++) {
+        const options = sharedOptions || this.resolveDataElementOptions(i, mode);
+        const baseProperties = this.calculateElementProperties(i, ruler, reset, options);
+        if (includeOptions) {
+        baseProperties.options = options;
+        }
+        this.updateElement(elements[i], i, baseProperties, mode);
+    }
+    }
+}
+chart_js.Chart.register(CandlestickController, OhlcController, CandlestickElement, OhlcElement);
+}));
+</script>        
+<!-- <script type="text/javascript" src="./index.js"></script> -->
+<script>
+
+//INIT-------------------------------------------------------
+var barCount = 60;
+var barData = new Array(barCount);
+var lineData = new Array(barCount);    
+var initialDateStr = new Date().toUTCString();
+const canvasChart = document.getElementById('finChart'); // Assuming your canvas has an ID 'myChart'
+var chart, chartElem, ctx;
+const initChart = ()=>{
+    let chartElem = Chart.getChart(canvasChart); // Check if a chart already exists on the canvas
+    if (chartElem) {  // Destroy the existing chart if any
+    chartElem.destroy();
+    }
+    ctx = canvasChart.getContext('2d');
+    ctx.canvas.width = 1000;
+    if(!ai_viewz.chart_expanded){ //expand_CHART
+        ctx.canvas.height = 444; //small
+        console.log('Rendering:','small')
+    }else if(ai_viewz.chart_expanded){
+        ctx.canvas.height = 777; //big
+        console.log('Rendering:','big')
+    }else{
+        ctx.canvas.height = 666; //default
+        console.log('Rendering:','default')
+    }
+
+    getRandomData(initialDateStr);
+    chart = new Chart(ctx, {type: 'candlestick',
+    data:{ datasets: [{
+        label: 'TKR',
+        data: barData,
+        }, {
+        label: 'Close',
+        type: 'line',
+        data: lineData,
+        hidden: true,
+        }]
+    }});
+}; initChart();
+
+//UTILITIES---------------------------------------------------------
+function randomNumber(min, max) {
+  return Math.random() * (max - min) + min;
+}
+function randomBar(target, index, date, lastClose) {
+  var open = +randomNumber(lastClose * 0.95, lastClose * 1.05).toFixed(2);
+  var close = +randomNumber(open * 0.95, open * 1.05).toFixed(2);
+  var high = +randomNumber(Math.max(open, close), Math.max(open, close) * 1.1).toFixed(2);
+  var low = +randomNumber(Math.min(open, close) * 0.9, Math.min(open, close)).toFixed(2);
+  if (!target[index]) {
+    target[index] = {};
+  }
+  Object.assign(target[index], {
+    x: date.valueOf(),
+    o: open,
+    h: high,
+    l: low,
+    c: close
+  });
+}
+function getRandomData(dateStr) {
+  var date = luxon.DateTime.fromRFC2822(dateStr);
+  for (let i = 0; i < barData.length;) {
+    date = date.plus({days: 1});
+    if (date.weekday <= 5) {
+      randomBar(barData, i, date, i === 0 ? 30 : barData[i - 1].c);
+      lineData[i] = {x: barData[i].x, y: barData[i].c};
+      i++;
+    }
+  }
+}
+//UPDATE----------------------------------------------------------------
+var updateChart = function() {
+  var dataset = chart.config.data.datasets[0];
+  var type = document.getElementById('type').value; // candlestick vs ohlc
+  chart.config.type = type;
+  var scaleType = document.getElementById('scale-type').value; // linear vs log
+  chart.config.options.scales.y.type = scaleType;
+  var colorScheme = document.getElementById('color-scheme').value; // color
+  colorScheme = 'neon'
+  if (colorScheme === 'neon') {
+    chart.config.data.datasets[0].backgroundColors = {
+      up: '#01ff01', //green
+      down: '#fe0000', //red
+      unchanged: '#999', //white
+    };
+  } else { delete chart.config.data.datasets[0].backgroundColors; }
+  var border = document.getElementById('border').value; // border
+  if (border === 'false') { dataset.borderColors = 'rgba(0, 0, 0, 0)'; } else { delete dataset.borderColors;}
+  // mixed charts
+  var mixed = document.getElementById('mixed').value;
+  if (mixed === 'true') {
+    chart.config.data.datasets[1].hidden = false;
+  } else {
+    chart.config.data.datasets[1].hidden = true;
+  }
+  chart.update();
+};
+[...document.getElementsByTagName('select')].forEach( //updateChart() on each SELECT change
+    element => element.addEventListener('change', updateChart));
+// document.getElementById('updateBtn').addEventListener('click', updateChart);
+document.getElementById('randomizeData').addEventListener('click', function() {
+  getRandomData(initialDateStr, barData);
+  updateChart();
+}); updateChart(); //init default
+</script>
+
 </body>
 </html>
