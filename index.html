@@ -1235,7 +1235,61 @@ const initTKRChart1 = ()=>{
             { label: 'Close', type: 'line', data: lineData, hidden: false }
         ]}
     });
-}; initTKRChart1();
+}; //initTKRChart1();
+const getChartData = ()=>{
+    let dataset = [];
+    debugger;
+    let tgtYMTID = '2024_6_BTC',txn,ymdARR,tgtYR,tgtMO,tgtDAY,dateYMD,stampUTC;
+    for(var j=0; j<ai_bankbookz_2.ymt_MonthlyMap[tgtYMTID].length;j++){ //TRANSACTIONS.
+            txn = ai_bankbookz_2.ymt_MonthlyMap[tgtYMTID][j];
+            ymdARR = txn.ymd.split('_');
+            tgtYR = ymdARR[0];
+            tgtMO = ymdARR[1]-1;//month is zero based.
+            tgtDAY = ymdARR[2];
+            dateYMD = new Date(tgtYR, tgtMO, tgtDAY);
+            stampUTC = dateYMD.getTime();
+            // dataset.push({x:stampUTC,y:txn.price})
+            dataset.push({x:stampUTC.toString(),y:parseFloat(txn.price.replace(/,/g, ''))})
+            // parseFloat(point.y.replace(/,/g, '')); // Convert string to number, replacing commas
+            console.log({x:stampUTC,y:txn.price})
+        }
+        
+    return dataset;
+}
+const initTKRChart2 = ()=>{
+    let chartElem1 = Chart.getChart(canvasChart); // Check if a chart already exists on the canvas
+    if (chartElem1) {  // Destroy the existing chart if any
+    chartElem1.destroy();
+    }
+    ctx1 = canvasChart.getContext('2d');
+    ctx1.canvas.width = 1000;
+    if(!ai_viewz.chart_expanded){ //expand_CHART
+        ctx1.canvas.height = 444; //small
+        console.log('Rendering:','small')
+    }else if(ai_viewz.chart_expanded){
+        ctx1.canvas.height = 777; //big
+        console.log('Rendering:','big')
+    }else{
+        ctx1.canvas.height = 666; //default
+        console.log('Rendering:','default')
+    }
+    getRandomData(initialDateStr);
+    // lineData[1] = {x: 1718999820000, y: 29.62}
+    // barData[1] = {x: 1718999820000, o: 28.43, h: 30.36, l: 28.19, c: 29.62}
+
+    // debugger;
+    let btcData = getChartData()
+    TKRChart1 = new Chart(ctx1, 
+    {
+        // type: 'candlestick',
+        type: 'line',
+        data:{ datasets: [
+            {label:'BTC',data:btcData}
+            // { label: 'TKR', data: barData }, 
+            // { label: 'Close', type: 'line', data: lineData, hidden: false }
+        ]}
+    });
+}; initTKRChart2();
 
 //UTILITIES---------------------------------------------------------
 function randomNumber(min, max) {
@@ -1485,7 +1539,7 @@ const getData_TestConnection = ()=>{
 let setAPIKEY = ()=>{
 //    if(keyINPUT.value){
         //  stock_api_key = keyINPUT.value;
-         stock_api_key = "FEXP21P69HLYA82U";
+         stock_api_key = "EXP21P69HLYA82";
       //  localStorage.stock_api_key = stock_api_key
     //   getData_TestConnection();
       //  initLedger()
