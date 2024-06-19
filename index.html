@@ -181,7 +181,7 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
 }
 /**END CUSTOM CHECKBOX******************************************************/
 /** CHARTJS ***************************************************************/
-.chartSELECTOR {background:steelblue;border-radius: 10px;border: 1px solid lime;
+.chartSELECTOR {background:black; color:steelblue;border-radius: 10px;border: 1px solid aqua;
     padding: 0.333%;}
 .chartBTN {background:steelblue;border-radius: 10px;border: 1px solid orangered;
     padding: 0.666%;}
@@ -195,8 +195,8 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
 } /* focused item */
 /** END CHARTJS ***************************************************************/
 /** CUSTOM EXPANDER ***************************************************************/
-.expanderROW{font-family: monospace;margin:2%4%;width:86%;;border-radius: 44%;
-    border: solid 1px #01092e;padding: 0.22em 2em;
+.expanderROW{font-family:verdana;margin:2%4%;width:86%;;border-radius: 44%;
+    border: solid 1px #01092e;padding: 0.22em 2em;font-size: 0.666em;color:cyan;
 }
 .MinMaxBTN{color:aqua;background:black;border:solid 1px seagreen;
     width: 1.444em;text-align: center;border-radius: 50%;box-shadow: 1px 1px 1px teal;
@@ -231,34 +231,36 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
     <article id="CHART_VIEW" class="scrollBarV">
         <header style="margin-bottom:1em;display:flex;justify-content: space-between;">
             <span>CHARTS</span>
-            <button class="BTN" onclick="go_GALLERY_VIEW_Click()">SELECT</button>
+            <!-- <button class="BTN" onclick="go_GALLERY_VIEW_Click()">SELECT</button> -->
             </header>
     
     <!--aside  id="chartMaxMinBTN" class="expandCollapseBTN2 MinMaxBTN2" onclick="minMaxExpandCollapseClick()"
         >✴</aside-->
     <canvas id="finChart" style="font-size:0.888em; border:solid 1px limegreen; border-radius:22px;
     padding:1em; margin:0.222em;width: 88%;"></canvas>
-    <header class="expanderROW">TKR_Query:
+    <header class="expanderROW">SELECT:
         <aside  id="queryVIEWBTN" class="expandCollapseBTN2" onclick="queryExpandCollapseClick()"
             >✴</aside>
     </header>
-    <section id="queryVIEW" style="font-size:0.888em; border:solid 1px cyan; border-radius:22px;
-    padding:3%; margin:2%; line-height: 2.888em;">
-        <select id="tkrSelect1" class="chartSELECTOR">
+    <section id="queryVIEW" style="font-size:0.888em; border:solid 1px steelblue; border-radius:22px;
+    padding:3%; margin:2%; line-height: 2.888em;margin-top: -10px;">
+        <aside id="selectionOutput" style="border:solid 1px steelblue;border-radius:13px;font-size: 0.666em;
+        padding: 0 2% 0 2%;
+        color: aqua;
+        ">...</aside>
+        <select id="ymt_SELECTOR" style="float: right;margin-top: 1em;" class="chartSELECTOR">
             <option value="true" selected>NVDA</option>
             <option value="false">AMZN</option>
             <option value="false">COIN</option>
         </select>
-        <button id="getDataBTN" disabled class="chartBTN">Get_DATA</button>
-        <button id="importTXNZBTN" disabled class="chartBTN">Enter_TXNZ</button>
     </section>
-    <header class="expanderROW">TKR_Metadata:
+    <header class="expanderROW">METADATA:
         <aside  id="metadataVIEWBTN" class="expandCollapseBTN2" onclick="metadataExpandCollapseClick()"
             >✴</aside>
     </header>
-    <section id="metadataVIEW" style="font-size:0.888em; 
-    border:solid 1px cyan; border-radius:22px;
-    padding:3%; margin:2%; line-height: 2.888em;">
+    <section id="metadataVIEW" style="font-size:0.888em;
+    border:solid 1px steelblue; border-radius:22px;
+    padding:3%; margin:2%; line-height: 2.888em;margin-top: -10px; ">
         Month NET:
         <input id="type2" class="chartSELECTOR"></input>
         AVG AMT:
@@ -266,12 +268,12 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
         GAIN %:
         <input id="color-scheme2" class="chartSELECTOR"></input>
     </section>
-    <header class="expanderROW">TKR_Config:
+    <header class="expanderROW">CONFIG:
         <aside  id="configVIEWBTN" class="expandCollapseBTN2" onclick="configExpandCollapseClick()"
         >✴</aside>
     </header>
-    <section id="configVIEW" style="font-size:0.888em; border:solid 1px cyan; border-radius:22px;
-    padding:3%; margin:2%; line-height: 2.888em;">
+    <section id="configVIEW" style="font-size:0.888em; border:solid 1px steelblue; border-radius:22px;
+    padding:3%; margin:2%; line-height: 2.888em;margin-top: -10px;">
         Bar Type:
         <select id="type" class="chartSELECTOR">
             <option value="candlestick" selected>Candlestick</option>
@@ -402,12 +404,18 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
         dynamic_height = screenHeight/4;
         CHART_VIEW.style.maxHeight=(dynamic_height*3)+'px';
 
+
+        // CHART_SELECTIONS
+        updateSelections();
+
         let chartTXT = "..."
         let genr8CHARTS = run_CHART_ENGINE();
         if(CHART_SELECTIONS&&CHART_SELECTIONS.length&&chartTXT){
             for(var i=0; i<CHART_SELECTIONS.length;i++){
                 chartTXT+=CHART_SELECTIONS[i]
             }
+        }else{
+            show_Random_Chart();
         }
 
         CHART_VIEW.classList.remove('hiddenTab') 
@@ -416,7 +424,7 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
 
         // MAIN_VIEW.innerHTML = chart_view;
 
-    }; setTimeout(()=>{ go_CHART_VIEW_Click(); },1000);
+    }; //setTimeout(()=>{ go_CHART_VIEW_Click(); },1000);
 
     let go_IMPORT_VIEW_Click = ()=>{
         let dynamic_height = '20em';
@@ -516,13 +524,13 @@ try{
     } //END IMPORT CLICK
 
     let gallery_ITEMClick = (ymtID) =>{ //YMTid is unique id for Year, Month, Ticker dataset.
-        ai_bankbookz_2 = JSON.parse(localStorage.ai_bankbookz_2)
+        ai_bankbookz_2 = JSON.parse(localStorage.ai_bankbookz_2); //update
         EDIT_YMT_RECORD_ID = ymtID;
         go_GALLERY_VIEW_Click();
     }
 
     let saveEDIT_BTNClick = (ymtID) => {
-        debugger;
+        // debugger;
         // let ymtARR = ymtID.split('_');
         let tempARR = [], tgt, editOBJ = null;   
         let editTXT = document.getElementById('editTXT') 
@@ -721,12 +729,32 @@ getTXNZData();
  END EXAMPLE*/
 </script-->
 <script  async defer>//**** CHARTJS INSTANCE ************************************
-    //---DATA_QUERY----------------------------------
-    const tkrSelect1 = document.getElementById('tkrSelect1');
-    tkrSelect1.addEventListener('change', ()=>{
-        getRandomData(initialDateStr, barData);
-        updateChart();         
+    //---CHART_SELECTOR----------------------------------
+    const ymt_SELECTOR = document.getElementById('ymt_SELECTOR');
+    const selectionOutput = document.getElementById('selectionOutput');
+    ymt_SELECTOR.addEventListener('change', ()=>{
+        // getRandomData(initialDateStr, barData);
+        // updateTKRChart1();      
+        updateSelections();   
+        // getDataForChart();
+        updateTKRChart2();      
     });
+    const reset_SELECTOR = ()=>{
+        ymt_SELECTOR.innerHTML = ""; //clear children
+        ai_bankbookz_2 = JSON.parse(localStorage.ai_bankbookz_2); //update
+        let dataKeys = Object.keys(ai_bankbookz_2.ymt_MonthlyMap);
+        let options, dataKey;
+        for(var i=0;i<dataKeys.length;i++){
+            dataKey = dataKeys[i];
+            options = document.createElement("option");
+            options.value = dataKey; options.text = dataKey;
+            ymt_SELECTOR.appendChild(options);
+        }
+        let selectNone = document.createElement("option");
+        selectNone.value = '...'; selectNone.text = '...';
+        selectNone.selected = true;
+        ymt_SELECTOR.appendChild(selectNone);
+    }; reset_SELECTOR();
     //---METADATA----------------------------------
     //---EXPAND COLLAPSE BTNs----------------------------------
     const queryVIEW = document.getElementById('queryVIEW')
@@ -794,17 +822,18 @@ getTXNZData();
         localStorage.ai_viewz = JSON.stringify(ai_viewz); //SAVE to LOCAL STORAGE 
         displayConfigView(); //RELOAD VIEW. 
     }  
-    const minMaxExpandCollapseClick = ()=>{
-        if(!ai_viewz.chart_expanded){
-            chartMaxMinBTN.innerHTML = '✧'
-        } else {
-            chartMaxMinBTN.innerHTML = '✴'
-        }        
-        ai_viewz.chart_expanded = !ai_viewz.chart_expanded;
-        localStorage.ai_viewz = JSON.stringify(ai_viewz); //SAVE to LOCAL STORAGE 
-        initChart();  //RELOAD VIEW. 
-        updateChart();  //RELOAD VIEW. 
-    }        
+    // const minMaxExpandCollapseClick = ()=>{
+    //     if(!ai_viewz.chart_expanded){
+    //         chartMaxMinBTN.innerHTML = '✧'
+    //     } else {
+    //         chartMaxMinBTN.innerHTML = '✴'
+    //     }        
+    //     ai_viewz.chart_expanded = !ai_viewz.chart_expanded;
+    //     localStorage.ai_viewz = JSON.stringify(ai_viewz); //SAVE to LOCAL STORAGE 
+    //     initTKRChart1();  //RELOAD VIEW. 
+    //     // updateTKRChart1();  //RELOAD VIEW. 
+    //     updateTKRChart1();  //RELOAD VIEW. 
+    // }        
 </script>
 <script>
 /*!
@@ -1171,41 +1200,42 @@ chart_js.Chart.register(CandlestickController, OhlcController, CandlestickElemen
 //INIT-------------------------------------------------------
 var barCount = 60;
 var barData = new Array(barCount);
-var lineData = new Array(barCount);    
+var lineData = new Array(barCount);   
 var initialDateStr = new Date().toUTCString();
-const canvasChart = document.getElementById('finChart'); // Assuming your canvas has an ID 'myChart'
-var chart, chartElem, ctx;
-const initChart = ()=>{
-    let chartElem = Chart.getChart(canvasChart); // Check if a chart already exists on the canvas
-    if (chartElem) {  // Destroy the existing chart if any
-    chartElem.destroy();
+const canvasChart = document.getElementById('finChart'); 
+var TKRChart1, TKRChart2; //unique handles for concurrent chart instances.
+var chartElem1, chartElem2, ctx1, ctx2; //handles for internals.
+const initTKRChart1 = ()=>{
+    let chartElem1 = Chart.getChart(canvasChart); // Check if a chart already exists on the canvas
+    if (chartElem1) {  // Destroy the existing chart if any
+    chartElem1.destroy();
     }
-    ctx = canvasChart.getContext('2d');
-    ctx.canvas.width = 1000;
+    ctx1 = canvasChart.getContext('2d');
+    ctx1.canvas.width = 1000;
     if(!ai_viewz.chart_expanded){ //expand_CHART
-        ctx.canvas.height = 444; //small
+        ctx1.canvas.height = 444; //small
         console.log('Rendering:','small')
     }else if(ai_viewz.chart_expanded){
-        ctx.canvas.height = 777; //big
+        ctx1.canvas.height = 777; //big
         console.log('Rendering:','big')
     }else{
-        ctx.canvas.height = 666; //default
+        ctx1.canvas.height = 666; //default
         console.log('Rendering:','default')
     }
-
     getRandomData(initialDateStr);
-    chart = new Chart(ctx, {type: 'candlestick',
-    data:{ datasets: [{
-        label: 'TKR',
-        data: barData,
-        }, {
-        label: 'Close',
-        type: 'line',
-        data: lineData,
-        hidden: true,
-        }]
-    }});
-}; initChart();
+    // lineData[1] = {x: 1718999820000, y: 29.62}
+    // barData[1] = {x: 1718999820000, o: 28.43, h: 30.36, l: 28.19, c: 29.62}
+
+    // debugger;
+    TKRChart1 = new Chart(ctx1, 
+    {
+        type: 'candlestick',
+        data:{ datasets: [
+            { label: 'TKR', data: barData }, 
+            { label: 'Close', type: 'line', data: lineData, hidden: false }
+        ]}
+    });
+}; initTKRChart1();
 
 //UTILITIES---------------------------------------------------------
 function randomNumber(min, max) {
@@ -1239,39 +1269,343 @@ function getRandomData(dateStr) {
   }
 }
 //UPDATE----------------------------------------------------------------
-var updateChart = function() {
-  var dataset = chart.config.data.datasets[0];
+var updateTKRChart1 = function() {
+  var dataset = TKRChart1.config.data.datasets[0];
   var type = document.getElementById('type').value; // candlestick vs ohlc
-  chart.config.type = type;
+  TKRChart1.config.type = type;
   var scaleType = document.getElementById('scale-type').value; // linear vs log
-  chart.config.options.scales.y.type = scaleType;
+  TKRChart1.config.options.scales.y.type = scaleType;
   var colorScheme = document.getElementById('color-scheme').value; // color
   colorScheme = 'neon'
   if (colorScheme === 'neon') {
-    chart.config.data.datasets[0].backgroundColors = {
+    TKRChart1.config.data.datasets[0].backgroundColors = {
       up: '#01ff01', //green
       down: '#fe0000', //red
       unchanged: '#999', //white
     };
-  } else { delete chart.config.data.datasets[0].backgroundColors; }
+  } else { delete TKRChart1.config.data.datasets[0].backgroundColors; }
   var border = document.getElementById('border').value; // border
   if (border === 'false') { dataset.borderColors = 'rgba(0, 0, 0, 0)'; } else { delete dataset.borderColors;}
   // mixed charts
-  var mixed = document.getElementById('mixed').value;
-  if (mixed === 'true') {
-    chart.config.data.datasets[1].hidden = false;
-  } else {
-    chart.config.data.datasets[1].hidden = true;
-  }
-  chart.update();
+//   var mixed = document.getElementById('mixed').value;
+//   if (mixed === 'true') {
+//     TKRChart1.config.data.datasets[1].hidden = false;
+//   } else {
+//     TKRChart1.config.data.datasets[1].hidden = true;
+//   }
+  TKRChart1.update();
 };
-[...document.getElementsByTagName('select')].forEach( //updateChart() on each SELECT change
-    element => element.addEventListener('change', updateChart));
-// document.getElementById('updateBtn').addEventListener('click', updateChart);
+[...document.getElementsByTagName('select')].forEach( //updateTKRChart1() on each SELECT change
+    element => element.addEventListener('change', updateTKRChart1));
+// document.getElementById('updateBtn').addEventListener('click', updateTKRChart1);
 document.getElementById('randomizeData').addEventListener('click', function() {
   getRandomData(initialDateStr, barData);
-  updateChart();
-}); updateChart(); //init default
+  updateTKRChart1();
+}); //updateTKRChart1(); //init default
+</script>
+<script async defer>/**** CHART IMPLEMENTATIONS ****/
+    function show_Random_Chart() {
+        getRandomData(initialDateStr, barData);
+        updateTKRChart1(); //legacy chart for demonstration
+    }
+
+    var updateSelections = function() {
+        let selection = ymt_SELECTOR.value, tgt, found=false;
+        if(selection==='...'){
+            CHART_SELECTIONS = [];
+            selectionOutput.innerHTML = '...'
+            return;
+        }
+        for(var i=0; i<CHART_SELECTIONS.length;i++){
+            tgt = CHART_SELECTIONS[i];
+            if(selection===tgt){//found remove
+                found=true; 
+                CHART_SELECTIONS.splice(i,1)
+                break;
+            }
+        }
+        if(!found){//add
+            CHART_SELECTIONS.push(selection)
+        }
+        if(CHART_SELECTIONS.length<1){ 
+            selectionOutput.innerHTML = '...';
+        }else{
+            selectionOutput.innerHTML = CHART_SELECTIONS.join(', ');
+        }
+    }
+
+var updateTKRChart2 = function() { //FIRST DATA OVERRIDE.
+    
+    var dataset = TKRChart1.config.data.datasets[0];
+    var dataset2 = TKRChart1.config.data.datasets[1];
+// debugger;
+// dataset2.data = [{"x":1718922789000,"y":29.84},{"x":1719009189000,"y":29.96},{"x":1719268389000,"y":31.78},{"x":1719354789000,"y":31.75},{"x":1719441189000,"y":31.24},{"x":1719527589000,"y":31.24},{"x":1719613989000,"y":32.46},{"x":1719873189000,"y":33.06},{"x":1719959589000,"y":31.92},{"x":1720045989000,"y":33.37},{"x":1720132389000,"y":34.64},{"x":1720218789000,"y":37.28},{"x":1720477989000,"y":35.6},{"x":1720564389000,"y":37},{"x":1720650789000,"y":35.39},{"x":1720737189000,"y":37.35},{"x":1720823589000,"y":35.84},{"x":1721082789000,"y":36.9},{"x":1721169189000,"y":35.62},{"x":1721255589000,"y":36.29},{"x":1721341989000,"y":39.71},{"x":1721428389000,"y":39.13},{"x":1721687589000,"y":36.8},{"x":1721773989000,"y":36.51},{"x":1721860389000,"y":33.99},{"x":1721946789000,"y":32.54},{"x":1722033189000,"y":30.68},{"x":1722292389000,"y":30.44},{"x":1722378789000,"y":29.18},{"x":1722465189000,"y":28.29},{"x":1722551589000,"y":29.43},{"x":1722637989000,"y":30.23},{"x":1722897189000,"y":30.63},{"x":1722983589000,"y":32.73},{"x":1723069989000,"y":34.54},{"x":1723156389000,"y":35.76},{"x":1723242789000,"y":35.36},{"x":1723501989000,"y":33.92},{"x":1723588389000,"y":35.58},{"x":1723674789000,"y":37.06},{"x":1723761189000,"y":36.3},{"x":1723847589000,"y":35.29},{"x":1724106789000,"y":35.58},{"x":1724193189000,"y":36.69},{"x":1724279589000,"y":36.51},{"x":1724365989000,"y":35.39},{"x":1724452389000,"y":35.08},{"x":1724711589000,"y":35.83},{"x":1724797989000,"y":37.23},{"x":1724884389000,"y":37.44},{"x":1724970789000,"y":35.7},{"x":1725057189000,"y":35.49},{"x":1725316389000,"y":35.66},{"x":1725402789000,"y":35.28},{"x":1725489189000,"y":33.47},{"x":1725575589000,"y":32.86},{"x":1725661989000,"y":35.12},{"x":1725921189000,"y":34.99},{"x":1726007589000,"y":36.64},{"x":1726093989000,"y":36.08}]
+dataset.data = getDataForChart();
+dataset2.data = getDataForChart();
+
+    var type = document.getElementById('type').value; // candlestick vs ohlc
+    TKRChart1.config.type = type;
+    var scaleType = document.getElementById('scale-type').value; // linear vs log
+    TKRChart1.config.options.scales.y.type = scaleType;
+    var colorScheme = document.getElementById('color-scheme').value; // color
+    colorScheme = 'neon'
+    if (colorScheme === 'neon') {
+        TKRChart1.config.data.datasets[0].backgroundColors = {
+        up: '#01ff01', //green
+        down: '#fe0000', //red
+        unchanged: '#999', //white
+        };
+    } else { delete TKRChart1.config.data.datasets[0].backgroundColors; }
+    var border = document.getElementById('border').value; // border
+    if (border === 'false') { dataset.borderColors = 'rgba(0, 0, 0, 0)'; } else { delete dataset.borderColors;}
+    // mixed charts
+    var mixed = document.getElementById('mixed').value;
+    if (mixed === 'true') {
+        TKRChart1.config.data.datasets[1].hidden = false;
+    } else {
+        TKRChart1.config.data.datasets[1].hidden = true;
+    }
+    TKRChart1.update();
+};
+
+
+function getDataForChart(){
+    // debugger;
+    // lineData[1] = {x: 1718999820000, y: 29.62}
+    // barData[1] = {x: 1718999820000, o: 28.43, h: 30.36, l: 28.19, c: 29.62}
+    let dataset = [];
+    let tgtYMTID,txn,ymdARR,tgtYR,tgtMO,tgtDAY,dateYMD; //UTC TIMESTAMPS & PRICE
+    for(var i=0; i<CHART_SELECTIONS.length;i++){ //MONTH SELECTIONS.
+        tgtYMTID = CHART_SELECTIONS[i];
+        for(var j=0; j<ai_bankbookz_2.ymt_MonthlyMap[tgtYMTID].length;j++){ //TRANSACTIONS.
+            txn = ai_bankbookz_2.ymt_MonthlyMap[tgtYMTID][j];
+            ymdARR = txn.ymd.split('_');
+            tgtYR = ymdARR[0];
+            tgtMO = ymdARR[1]-1;//month is zero based.
+            tgtDAY = ymdARR[2];
+            dateYMD = new Date(tgtYR, tgtMO, tgtDAY);
+            stampUTC = dateYMD.getTime();
+            dataset.push({x:stampUTC,y:txn.price})
+        }
+        break;
+    }
+    return dataset;
+    // return TKRChart1.config.data.datasets[0];
+}
+</script>
+<script async defer>/***************************STOCK PRICE API***********/
+
+let stock_api_key = null;//API_KEY - set in local storage.
+let init_api_key = ()=>{
+   //Does local storage have API_KEY?
+   // if(!localStorage.stock_api_key){ //if no: display enter key
+   //     stateConnectedBox.style.display = "none";
+   //     stateNotConnectedBox.style.display = "inline";                   
+   //     symbolBOX.style.display = "none";
+   //     keyBOX.style.display = "inline";                   
+   //     //SHOW NOT CONNECTED. Hide connected. Hide tgt show key input.
+   // } else {//if yes init
+   //     //SHOW CONNNECTED and tgt, hide disconnected and key input
+   //     stateConnectedBox.style.display = "inline";
+   //     stateNotConnectedBox.style.display = "none";   
+   //     symbolBOX.style.display = "inline";
+   //     keyBOX.style.display = "none"; 
+
+   //     stock_api_key = (localStorage.stock_api_key)?localStorage.stock_api_key:'';
+   //     //initLedger() 
+   // }
+
+//         if(!stock_api_key){return;}
+//         // const apiKey = '';
+//         const symbol = 'NVDA';
+//         const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${stock_api_key}`;
+//         fetch(apiUrl)
+//         .then(response => response.json())
+//         .then(data => {
+//             // Process the data here (e.g., extract the latest stock price)
+//             const latestPrice = data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]]['1. open'];
+
+// //             data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]]['1. open'];
+// // '175.3700'
+// // data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]];
+// // {1. open: '175.3700', 2. high: '175.3700', 3. low: '175.0000', 4. close: '175.0000', 5. volume: '24782'}
+//             console.log(`Latest price for ${symbol}: ${latestPrice}`);
+//         })
+//         .catch(error => {
+//             console.error('Error fetching data:', error);
+//         });
+}; //init_api_key();
+let init_monthly = ()=>{
+   // replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
+   // var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=IBM&apikey=demo';
+   if(!stock_api_key){return;}
+   if(localStorage.monthly_NVDA_data){ //LOAD FROM LOCAL not API.
+         monthly_data = JSON.parse(localStorage.monthly_NVDA_data);
+         // let, val_ath=0,val_atl=0,curr_price=0,perc_off_ath=0;
+         let data_keys = Object.keys(monthly_data);
+         for(let i=0; i<data_keys.length;i++){
+            daily_data = monthly_data[data_keys[i]];
+            if(parseFloat(daily_data["2. high"]) > calculate_ATH){
+               calculate_ATH = parseFloat(daily_data["2. high"])
+            }
+            if(parseFloat(daily_data["3. low"]) < calculate_ATL || calculate_ATL===0){
+               calculate_ATL = parseFloat(daily_data["3. low"])
+            }
+         }
+         console.log('ATH:',calculate_ATH)
+         console.log('ATL:',calculate_ATL)
+         console.log('Curr Price:', current_PRICE)
+         console.log('%off ATH', perc_off_ath)
+         return;
+   }
+   // const apiKey = '';
+   // const symbol = 'NVDA';
+   const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=${target_SYMBOL}&apikey=${stock_api_key}`;
+   fetch(apiUrl)
+   .then(response => response.json())
+   .then(data => {
+         localStorage.monthly_NVDA_data = JSON.stringify(data["Monthly Adjusted Time Series"]);
+
+   })
+   .catch(error => {
+         console.error('Error fetching data:', error);
+   });
+}; //init_monthly();
+
+const getData_TestConnection = ()=>{
+   if(!stock_api_key){
+      showErrorMSG('🛠️ connect api')
+      return;}
+      //SHOW CONNNECTED and CAP, hide disconnected and key input
+      stateConnectedBox.style.display = "inline";
+      stateNotConnectedBox.style.display = "none";   
+      keyBOX.style.display = "none"; 
+      latestBtn1.style.display = "inline";
+}
+let setAPIKEY = ()=>{
+//    if(keyINPUT.value){
+        //  stock_api_key = keyINPUT.value;
+         stock_api_key = "FEXP21P69HLYA82U";
+      //  localStorage.stock_api_key = stock_api_key
+    //   getData_TestConnection();
+      //  initLedger()
+//    }
+}; setAPIKEY();
+// const getData_Intraday = ()=>{
+//    if(!stock_api_key){return;}
+//       const symbol = 'NVDA';
+//       const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${stock_api_key}`;
+//       fetch(apiUrl)
+//       .then(response => response.json())
+//       .then(data => {
+//             //SHOW CONNNECTED and CAP, hide disconnected and key input
+//             stateConnectedBox.style.display = "inline";
+//             stateNotConnectedBox.style.display = "none";   
+//             symbolBOX.style.display = "inline";
+//             keyBOX.style.display = "none"; 
+//             // Process the data here (e.g., extract the latest stock price)
+//             const latestPrice = data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]]['1. open'];
+//          //data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]]['1. open'];
+//          // data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]];
+//          // {1. open: '175.3700', 2. high: '175.3700', 3. low: '175.0000', 4. close: '175.0000', 5. volume: '24782'}
+//             console.log(`Latest price for ${symbol}: ${latestPrice}`);
+//       })
+//       .catch(error => {
+//             console.error('Error fetching data:', error);
+//       });         
+// }
+
+// function updateLatestTickPrice(responseTick,latestClose){ //loop ai_ledger, update price and latest label.
+//    let tickr='',item=null;
+//    latestClose = parseFloat(latestClose).toFixed(0); //round num
+//    for(let i=0; i<ai_ledger.ticks.length;i++){
+//       tickr=ai_ledger.ticks[i];
+//       if(tickr.tick===responseTick){ //FOUND ticker record
+//          ai_ledger.ticks[i].price = latestClose;
+//          ai_ledger.ticks[i].price_ymd = formatYMD();
+//          update_History_matrix(
+//             {tick:tickr.tick,
+//                ymd:ai_ledger.ticks[i].price_ymd,
+//                price: ai_ledger.ticks[i].price
+//             })
+//          break;
+//       }
+//    }
+// }
+
+const getData_Quotes = async (queries)=>{
+   if(!stock_api_key){ showErrorMSG('🛠️ connect api'); return;}
+   if(!queries.length){return;}
+   try{
+      for(let i=0; i<queries.length;i++){
+         console.log('Query:',queries[i].tkr)
+         //CRYPTO QUERIES-----------------------------------
+         if(queries[i].tkr==='BTC' 
+            || queries[i].tkr==='ETH'  
+            || queries[i].tkr==='LTC'  
+            || queries[i].tkr==='AVAX' ){
+            console.log('Crypto Query:',queries[i].tkr)
+            //getCryptoPriceQuery(); //TODO
+            continue;
+         }
+         //END CRYPTO QUERIES-----------------------------------
+         fetch(queries[i].url).then((data)=>{
+            if(data.ok){
+               return data.json();
+            } else{ debugger; }
+         }).then((tickData)=>{
+            if(tickData.Information && tickData.Information.indexOf('Thank you')===0){
+               showErrorMSG('🛠️ api daily limit');
+               debugger;
+               return;
+            }
+            if(!tickData || !tickData["Meta Data"] || !tickData["Meta Data"]["2. Symbol"] ){
+               debugger; //todo
+            }
+            let responseTick = tickData["Meta Data"]["2. Symbol"];
+            if(!responseTick){return;}
+            let latestClose = tickData["Time Series (5min)"][Object.keys(tickData["Time Series (5min)"])[0]]["4. close"];
+            if(!latestClose){return;}
+            console.log(responseTick,"last close",latestClose)
+            updateLatestTickPrice(responseTick,latestClose);
+            //SHOW CONNNECTED and CAP, hide disconnected and key input
+            stateConnectedBox.style.display = "inline";
+            stateNotConnectedBox.style.display = "none";   
+            keyBOX.style.display = "none"; 
+            latestBtn1.style.display = "none"; //do not call twice. because of limit
+            localStorage.ai_ledger = JSON.stringify(ai_ledger) //SAVE to LOCAL STORAGE
+            initEncode(); //RELOAD VIEW. 
+
+         }).catch((error)=>{
+            debugger;
+            showErrorMSG('🛠️ bad request')
+            console.log(error)
+         })
+      }
+   } catch(error) {
+         showErrorMSG('🛠️ api down')
+   }           
+}
+
+
+const getLastPriceClick = ()=>{ //loop all for last close.
+   let item,queries=[];//urls=[];
+   for(let i=0;i<ai_ledger.ticks.length;i++){
+      // if(i>=1){continue;}//DEV_limiter stay below 20
+      item = ai_ledger.ticks[i];
+      // item.tick = 'NVDA';//DEV_specifier 
+      // urls.push(`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${item.tick}&interval=5min&apikey=${stock_api_key}`)
+      queries.push({tkr:item.tick,url:`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${item.tick}&interval=5min&apikey=${stock_api_key}`})
+   }
+   // if(stock_api_key && urls.length){
+   if(stock_api_key && queries.length){
+      getData_Quotes(queries)
+      // getData_Quotes(urls)
+      showErrorMSG('🌼DATA UPDATED🌼') //todo error. need show message not error.
+   } else {
+      showErrorMSG('🛠️ connect api key'); 
+   }
+}
 </script>
 
 </body>
