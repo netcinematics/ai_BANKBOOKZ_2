@@ -43,10 +43,12 @@ body{ background:black; color:steelblue; font-size: 1.2em;
     padding:4.444%;
     box-shadow: inset 0px 0px 10px 0px #0404bb;
     height:100%;flex:1;display:flex;width:90%;flex-direction: column;
+    border-radius: 13px;
 }
 #GALLERY_FRAME {
     padding:4.444%;
     box-shadow: inset 0px 0px 10px 0px #0404bb;
+    border-radius: 13px;
 }
 #EDIT_FRAME {
     display: flex;
@@ -219,16 +221,22 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
 .expandCollapseBTN2:hover{color:cyan;background:darkblue;border:solid 1px teal;}
 .expandCollapseBTN2:active{color:cyan;background:darkslategrey;border:solid 1px teal;}
 /** END CUSTOM EXPANDER ***************************************************************/
+/** API ***************************************************************/
+#keyBOX{ margin:1%;border: solid 1px steelblue;font-size: 0.777em;}
+#keyINPUT:-webkit-autofill { -webkit-box-shadow: 0 0 0px 1000px #233453 inset;}
+/** END API ***************************************************************/
 
 </style>
-<body>
+<body  class="scrollBarV">
     <header class="main_header">ai_BANKBOOKZ</header>
     <aside class="main_menu">
         <button class="BTN" onclick="go_CHART_VIEW_Click()">CHART</button>
         <button class="BTN" style="margin:0 1em 0 1em;" onclick="go_IMPORT_VIEW_Click()">IMPORT</button>
-        <button class="BTN" onclick="go_GALLERY_VIEW_Click()">DATA</button></footer></aside>
+        <button class="BTN" onclick="go_GALLERY_VIEW_Click()">DATA</button>
+        <button class="BTN" style="margin:0 1em 0 1em;"onclick="test_BTNClick()">TEST</button>
+    </footer></aside>
     <section id="MAIN_VIEW" class="MAIN_VIEW hiddenTab">~ Loading...</section>
-    <article id="CHART_VIEW" class="scrollBarV">
+    <article id="CHART_VIEW" >
         <header style="margin-bottom:1em;display:flex;justify-content: space-between;">
             <span>CHARTS</span>
             <!-- <button class="BTN" onclick="go_GALLERY_VIEW_Click()">SELECT</button> -->
@@ -306,10 +314,23 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
         
     </article>
 
-
-
-    <legal style="color:darkslategray;font-size: 0.444em;position:absolute;bottom:0em;">
-        <div style="margin-top:0;margin-bottom:1em;">
+    <footer style="display:flex;border: solid 1px steelblue;
+    border-radius: 13px;padding: 2px 6px;color: #022e64;align-items: center;    margin: 1% 0% 0% 0;
+    justify-content: space-between;
+ ">
+        <section id="keyBOX" style="display:flex;border: solid 1px steelblue;
+        border-radius: 13px;padding: 2px 6px;color: #022e64;align-items: center;
+        margin:1%;">
+            API:<input id="keyINPUT"  type="password" placeholder="api_key" 
+            style="margin-left: 1em; background:#233453;
+            border-radius: 10px 0px 0px 10px;"></input>
+            <button style="margin-right: 1em; background:#03cbcb;cursor:pointer;
+            border-radius: 0px 10px 10px 0px; font-size:0.777em;padding: 4px;" onclick="setAPIKEY();">SET</button>
+        </section>  
+        <section id="connectStatus" style="font-size: 0.666em;margin-right:2%;color:aqua;">disconnected</section>
+    </footer>
+    <legal style="color:darkslategray;font-size: 0.444em; margin-top: 2%;">
+        <div style="margin-top:0;margin-bottom:0em;">
             2020 - <span id="dateTXTStamp"></span> © NetCinematics llc. All rights reserved.
             Personal ledger system, Generative visualization, not financial advice.
         </div>
@@ -339,7 +360,8 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
 
     const GALLERY_FRAME = document.getElementById("GALLERY_FRAME");
     let EDIT_YMT_RECORD_ID = ''; //persist record editing between views.
-    let CHART_SELECTIONS = []; //persist chart selections between views.    
+    let CHART_SELECTIONS = []; //persist chart selections between views.  
+
     // **** END VIEWS *******************************************************
     /*************************************************************\
      * ai_bankbookz_2 - ability to save monthly data in localstorage
@@ -363,8 +385,7 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
     //****************************CHART_ENGINE*******************************
     const run_CHART_ENGINE=()=>{
 
-    let chart_view = `
-    `;
+    let chart_view = ` `;
         return chart_view;
     }  
     //****************************END CHART_ENGINE*******************************
@@ -456,7 +477,7 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
             let data_item = ai_bankbookz_2.ymt_MonthlyMap[EDIT_YMT_RECORD_ID];
             data_item = JSON.stringify(data_item);
             selected_data_view = 
-            `<article id="EDIT_FRAME" style="height:${dynamic_height};" class="scrollBarV">
+            `<article id="EDIT_FRAME" style="height:${dynamic_height};" >
                 <aside style="display:flex;">
                     <button class="BTN" style="margin-bottom:1em;margin-top:0.444em;margin-right:1em;" 
                         onclick="back_BTNClick()">GALLERY</button>
@@ -469,7 +490,7 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
         } else {
             let data_gallery = getDataGallery();
             selected_data_view = 
-            `<article id="GALLERY_FRAME" style="height:${dynamic_height}" class="scrollBarV">
+            `<article id="GALLERY_FRAME" style="height:${dynamic_height}" >
                 ${data_gallery.join('')}
             </article>`
         }
@@ -485,6 +506,9 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
     let back_BTNClick = ()=>{    
         EDIT_YMT_RECORD_ID = '';
         go_GALLERY_VIEW_Click();
+    }
+    let test_BTNClick = ()=>{
+        getLastPriceClick();
     }
     let import_BTNClick = ()=>{
         let importDATA = null, data_record=null, found=false;
@@ -1235,10 +1259,9 @@ const initTKRChart1 = ()=>{
             { label: 'Close', type: 'line', data: lineData, hidden: false }
         ]}
     });
-}; //initTKRChart1();
+}; initTKRChart1();
 const getChartData = ()=>{
     let dataset = [];
-    debugger;
     let tgtYMTID = '2024_6_BTC',txn,ymdARR,tgtYR,tgtMO,tgtDAY,dateYMD,stampUTC;
     for(var j=0; j<ai_bankbookz_2.ymt_MonthlyMap[tgtYMTID].length;j++){ //TRANSACTIONS.
             txn = ai_bankbookz_2.ymt_MonthlyMap[tgtYMTID][j];
@@ -1289,7 +1312,7 @@ const initTKRChart2 = ()=>{
             // { label: 'Close', type: 'line', data: lineData, hidden: false }
         ]}
     });
-}; initTKRChart2();
+}; //initTKRChart2();
 
 //UTILITIES---------------------------------------------------------
 function randomNumber(min, max) {
@@ -1450,45 +1473,26 @@ function getDataForChart(){
 <script async defer>/***************************STOCK PRICE API***********/
 
 let stock_api_key = null;//API_KEY - set in local storage.
+let keyBOX = document.getElementById('keyBOX');
+let keyINPUT = document.getElementById('keyINPUT');  
+
 let init_api_key = ()=>{
-   //Does local storage have API_KEY?
-   // if(!localStorage.stock_api_key){ //if no: display enter key
-   //     stateConnectedBox.style.display = "none";
-   //     stateNotConnectedBox.style.display = "inline";                   
-   //     symbolBOX.style.display = "none";
-   //     keyBOX.style.display = "inline";                   
-   //     //SHOW NOT CONNECTED. Hide connected. Hide tgt show key input.
-   // } else {//if yes init
-   //     //SHOW CONNNECTED and tgt, hide disconnected and key input
-   //     stateConnectedBox.style.display = "inline";
-   //     stateNotConnectedBox.style.display = "none";   
-   //     symbolBOX.style.display = "inline";
-   //     keyBOX.style.display = "none"; 
+   if(localStorage.stock_api_key){
+        stock_api_key = localStorage.stock_api_key;
+        let status = document.getElementById('connectStatus')
+        status.innerHTML='CONNECTED'        
+   }
+}; init_api_key();
 
-   //     stock_api_key = (localStorage.stock_api_key)?localStorage.stock_api_key:'';
-   //     //initLedger() 
-   // }
+let setAPIKEY = ()=>{
+   if(keyINPUT.value){
+        stock_api_key = keyINPUT.value;
+        localStorage.stock_api_key = stock_api_key;
+        let status = document.getElementById('connectStatus')
+        status.innerHTML='CONNECTED'
+   }
+}; 
 
-//         if(!stock_api_key){return;}
-//         // const apiKey = '';
-//         const symbol = 'NVDA';
-//         const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${stock_api_key}`;
-//         fetch(apiUrl)
-//         .then(response => response.json())
-//         .then(data => {
-//             // Process the data here (e.g., extract the latest stock price)
-//             const latestPrice = data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]]['1. open'];
-
-// //             data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]]['1. open'];
-// // '175.3700'
-// // data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]];
-// // {1. open: '175.3700', 2. high: '175.3700', 3. low: '175.0000', 4. close: '175.0000', 5. volume: '24782'}
-//             console.log(`Latest price for ${symbol}: ${latestPrice}`);
-//         })
-//         .catch(error => {
-//             console.error('Error fetching data:', error);
-//         });
-}; //init_api_key();
 let init_monthly = ()=>{
    // replace the "demo" apikey below with your own key from https://www.alphavantage.co/support/#api-key
    // var url = 'https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=IBM&apikey=demo';
@@ -1526,69 +1530,9 @@ let init_monthly = ()=>{
    });
 }; //init_monthly();
 
-const getData_TestConnection = ()=>{
-   if(!stock_api_key){
-      showErrorMSG('🛠️ connect api')
-      return;}
-      //SHOW CONNNECTED and CAP, hide disconnected and key input
-      stateConnectedBox.style.display = "inline";
-      stateNotConnectedBox.style.display = "none";   
-      keyBOX.style.display = "none"; 
-      latestBtn1.style.display = "inline";
-}
-let setAPIKEY = ()=>{
-//    if(keyINPUT.value){
-        //  stock_api_key = keyINPUT.value;
-         stock_api_key = "EXP21P69HLYA82";
-      //  localStorage.stock_api_key = stock_api_key
-    //   getData_TestConnection();
-      //  initLedger()
-//    }
-}; setAPIKEY();
-// const getData_Intraday = ()=>{
-//    if(!stock_api_key){return;}
-//       const symbol = 'NVDA';
-//       const apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${stock_api_key}`;
-//       fetch(apiUrl)
-//       .then(response => response.json())
-//       .then(data => {
-//             //SHOW CONNNECTED and CAP, hide disconnected and key input
-//             stateConnectedBox.style.display = "inline";
-//             stateNotConnectedBox.style.display = "none";   
-//             symbolBOX.style.display = "inline";
-//             keyBOX.style.display = "none"; 
-//             // Process the data here (e.g., extract the latest stock price)
-//             const latestPrice = data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]]['1. open'];
-//          //data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]]['1. open'];
-//          // data['Time Series (5min)'][Object.keys(data['Time Series (5min)'])[0]];
-//          // {1. open: '175.3700', 2. high: '175.3700', 3. low: '175.0000', 4. close: '175.0000', 5. volume: '24782'}
-//             console.log(`Latest price for ${symbol}: ${latestPrice}`);
-//       })
-//       .catch(error => {
-//             console.error('Error fetching data:', error);
-//       });         
-// }
-
-// function updateLatestTickPrice(responseTick,latestClose){ //loop ai_ledger, update price and latest label.
-//    let tickr='',item=null;
-//    latestClose = parseFloat(latestClose).toFixed(0); //round num
-//    for(let i=0; i<ai_ledger.ticks.length;i++){
-//       tickr=ai_ledger.ticks[i];
-//       if(tickr.tick===responseTick){ //FOUND ticker record
-//          ai_ledger.ticks[i].price = latestClose;
-//          ai_ledger.ticks[i].price_ymd = formatYMD();
-//          update_History_matrix(
-//             {tick:tickr.tick,
-//                ymd:ai_ledger.ticks[i].price_ymd,
-//                price: ai_ledger.ticks[i].price
-//             })
-//          break;
-//       }
-//    }
-// }
 
 const getData_Quotes = async (queries)=>{
-   if(!stock_api_key){ showErrorMSG('🛠️ connect api'); return;}
+//    if(!stock_api_key){ showErrorMSG('🛠️ connect api'); return;}
    if(!queries.length){return;}
    try{
       for(let i=0; i<queries.length;i++){
@@ -1608,58 +1552,62 @@ const getData_Quotes = async (queries)=>{
                return data.json();
             } else{ debugger; }
          }).then((tickData)=>{
-            if(tickData.Information && tickData.Information.indexOf('Thank you')===0){
-               showErrorMSG('🛠️ api daily limit');
-               debugger;
-               return;
-            }
-            if(!tickData || !tickData["Meta Data"] || !tickData["Meta Data"]["2. Symbol"] ){
-               debugger; //todo
-            }
-            let responseTick = tickData["Meta Data"]["2. Symbol"];
-            if(!responseTick){return;}
-            let latestClose = tickData["Time Series (5min)"][Object.keys(tickData["Time Series (5min)"])[0]]["4. close"];
-            if(!latestClose){return;}
-            console.log(responseTick,"last close",latestClose)
-            updateLatestTickPrice(responseTick,latestClose);
+            debugger;
+            let xmpl = tickData["Weekly Adjusted Time Series"]["2024-06-18"]
+            // if(tickData.Information && tickData.Information.indexOf('Thank you')===0){
+            //    showErrorMSG('🛠️ api daily limit');
+            //    debugger;
+            //    return;
+            // }
+            // if(!tickData || !tickData["Meta Data"] || !tickData["Meta Data"]["2. Symbol"] ){
+            //    debugger; //todo
+            // }
+            // let responseTick = tickData["Meta Data"]["2. Symbol"];
+            // if(!responseTick){return;}
+            // let latestClose = tickData["Time Series (5min)"][Object.keys(tickData["Time Series (5min)"])[0]]["4. close"];
+            // if(!latestClose){return;}
+            // console.log(responseTick,"last close",latestClose)
+            // updateLatestTickPrice(responseTick,latestClose);
             //SHOW CONNNECTED and CAP, hide disconnected and key input
-            stateConnectedBox.style.display = "inline";
-            stateNotConnectedBox.style.display = "none";   
-            keyBOX.style.display = "none"; 
-            latestBtn1.style.display = "none"; //do not call twice. because of limit
-            localStorage.ai_ledger = JSON.stringify(ai_ledger) //SAVE to LOCAL STORAGE
-            initEncode(); //RELOAD VIEW. 
+            // stateConnectedBox.style.display = "inline";
+            // stateNotConnectedBox.style.display = "none";   
+            // keyBOX.style.display = "none"; 
+            // latestBtn1.style.display = "none"; //do not call twice. because of limit
+            // localStorage.ai_ledger = JSON.stringify(ai_ledger) //SAVE to LOCAL STORAGE
+            // initEncode(); //RELOAD VIEW. 
 
          }).catch((error)=>{
             debugger;
-            showErrorMSG('🛠️ bad request')
+            // showErrorMSG('🛠️ bad request')
             console.log(error)
          })
       }
    } catch(error) {
-         showErrorMSG('🛠️ api down')
+        //  showErrorMSG('🛠️ api down')
    }           
 }
 
 
 const getLastPriceClick = ()=>{ //loop all for last close.
-   let item,queries=[];//urls=[];
-   for(let i=0;i<ai_ledger.ticks.length;i++){
+   let item={},queries=[];//urls=[];
+//    for(let i=0;i<ai_ledger.ticks.length;i++){
       // if(i>=1){continue;}//DEV_limiter stay below 20
-      item = ai_ledger.ticks[i];
-      // item.tick = 'NVDA';//DEV_specifier 
+    //   item = ai_ledger.ticks[i];
+    debugger;
+      item.tick = 'NVDA';//DEV_specifier 
+      item.url =  `https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol=${item.tick}&apikey=${stock_api_key}`;
       // urls.push(`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${item.tick}&interval=5min&apikey=${stock_api_key}`)
-      queries.push({tkr:item.tick,url:`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${item.tick}&interval=5min&apikey=${stock_api_key}`})
-   }
+    //   queries.push({tkr:item.tick,url:`https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${item.tick}&interval=5min&apikey=${stock_api_key}`})
+      queries.push({tkr:item.tick,url:item.url})
+//    }
    // if(stock_api_key && urls.length){
    if(stock_api_key && queries.length){
       getData_Quotes(queries)
-      // getData_Quotes(urls)
-      showErrorMSG('🌼DATA UPDATED🌼') //todo error. need show message not error.
+    //   showErrorMSG('🌼DATA UPDATED🌼') //todo error. need show message not error.
    } else {
-      showErrorMSG('🛠️ connect api key'); 
+    //   showErrorMSG('🛠️ connect api key'); 
    }
-}
+}; //getLastPriceClick();
 </script>
 
 </body>
