@@ -14,9 +14,9 @@
         <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
-
-        <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
-        <!-- <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script> -->
+<!-- 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script> -->
     </head>
     <style>
 body{ background:black; color:steelblue; font-size: 1.2em; 
@@ -242,13 +242,12 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
     <article id="CHART_VIEW" >
         <header style="margin-bottom:1em;display:flex;justify-content: space-between;">
             <span>CHARTS</span>
-        </header>
-        <!-- <button class="BTN" onclick="go_GALLERY_VIEW_Click()">SELECT</button> -->
+            <!-- <button class="BTN" onclick="go_GALLERY_VIEW_Click()">SELECT</button> -->
+            </header>
     
     <!--aside  id="chartMaxMinBTN" class="expandCollapseBTN2 MinMaxBTN2" onclick="minMaxExpandCollapseClick()"
         >✴</aside-->
-    <canvas id="ohlcChart" style="font-size:0.888em; border:solid 1px limegreen; border-radius:22px;
-    padding:1em; margin:0.222em;width: 88%;"></canvas>
+
     <canvas id="finChart" style="font-size:0.888em; border:solid 1px limegreen; border-radius:22px;
     padding:1em; margin:0.222em;width: 88%;"></canvas>
     <header class="expanderROW">SELECT:
@@ -336,9 +335,7 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
     </footer>
     <legal style="color:darkslategray;font-size: 0.444em; margin-top: 2%;">
         <div style="margin-top:0;margin-bottom:0em;">
-            2020 - <span id="dateTXTStamp"></span><script>
-                const dateTXTStamp = document.getElementById('dateTXTStamp');
-               dateTXTStamp.innerHTML = new Date().getFullYear();</script> © NetCinematics llc. All rights reserved.
+            2020 - <span id="dateTXTStamp"></span> © NetCinematics llc. All rights reserved.
             Personal ledger system, Generative visualization, not financial advice.
         </div>
     </legal>
@@ -518,57 +515,7 @@ background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 26%, tr
         // getLastPriceClick();
         // getCrypto_Quotes()
         debugger;
-        const data = [
-        { x: new Date(2024, 5, 20), open: 100, high: 105, low: 98, close: 102 },
-        { x: new Date(2024, 5, 21), open: 102, high: 108, low: 99, close: 104 },
-        { x: new Date(2024, 5, 22), open: 104, high: 110, low: 102, close: 107 },
-        // ... (add more data points)
-        ];
-
-        const ctx = document.getElementById('ohlcChart').getContext('2d');
-        const chart = new Chart(ctx, {
-        type: 'candlestick',
-        data: {
-            datasets: [{
-            label: 'OHLC',
-            data: data,
-            backgroundColor: 'rgba(255, 99, 132, 0.5)', // Red for down days
-            borderColor: 'rgba(255, 99, 132, 1)',  // Red for down days
-            upBackgroundColor: 'rgba(54, 162, 235, 0.5)', // Blue for up days
-            upBorderColor: 'rgba(54, 162, 235, 1)'   // Blue for up days
-            }]
-        },
-        options: {
-            responsive: true, // Chart resizes with container
-            // scales: {
-            // xAxes: [{
-            //     type: 'time', // Set x-axis for time display
-            //     time: {
-            //     unit: 'day'  // Display data points by day
-            //     }
-            // }],
-            // yAxes: [{
-            //     ticks: {
-            //     beginAtZero: false  // Allow negative values
-            //     }
-            // }]
-            // }
-        }
-        });
-
-        // let setCryptoData = ()=>{
-        //     let data = {
-        //         lables:['Jun 20','Jun 21','Jun 22','Jun 23'],
-        //         datasets:[{
-        //             label:'BTX',
-        //             data:[60000,61000,62000,63000],
-        //             backgroundColor:'rgba(255,99,132,0.2)',
-        //             borderColor:'rgba(255,99,132,1)',
-        //             borderWidth:1
-        //         }]
-                
-        //     }
-        // }
+   
         // setCryptoData();
         // updateTKRChart1(); //legacy chart for demonstration
 }
@@ -817,11 +764,11 @@ getTXNZData();
     const ymt_SELECTOR = document.getElementById('ymt_SELECTOR');
     const selectionOutput = document.getElementById('selectionOutput');
     ymt_SELECTOR.addEventListener('change', ()=>{
-        // getRandomData(initialDateStr, barData);
-        // updateTKRChart1();      
-        updateSelections();   
+        getRandomData(initialDateStr, barData);
+        updateTKRChart1();      
+        // updateSelections();   
         // getDataForChart();
-        updateTKRChart2();      
+        // updateTKRChart2();      
     });
     const reset_SELECTOR = ()=>{
         ymt_SELECTOR.innerHTML = ""; //clear children
@@ -1315,11 +1262,11 @@ const initTKRChart1 = ()=>{
     {
         type: 'candlestick',
         data:{ datasets: [
-            { label: 'TKR', data: barData }, 
-            { label: 'Close', type: 'line', data: lineData, hidden: false }
+            { label: 'TKR1', data: barData }, 
+            { label: 'TKR1', type: 'line', data: lineData, hidden: false }
         ]}
     });
-}; //initTKRChart1();
+}; initTKRChart1();
 const getChartData = ()=>{
     let dataset = [];
     let tgtYMTID = '2024_6_BTC',txn,ymdARR,tgtYR,tgtMO,tgtDAY,dateYMD,stampUTC;
@@ -1431,14 +1378,14 @@ var updateTKRChart1 = function() {
 //     TKRChart1.config.data.datasets[1].hidden = true;
 //   }
   TKRChart1.update();
-};
+}; // updateTKRChart1(); //init default
 [...document.getElementsByTagName('select')].forEach( //updateTKRChart1() on each SELECT change
     element => element.addEventListener('change', updateTKRChart1));
 // document.getElementById('updateBtn').addEventListener('click', updateTKRChart1);
 document.getElementById('randomizeData').addEventListener('click', function() {
   getRandomData(initialDateStr, barData);
   updateTKRChart1();
-}); //updateTKRChart1(); //init default
+});
 </script>
 <script async defer>/********************************* CHARTJS IMPLEMENTATIONS ****/
     function show_Random_Chart() {
