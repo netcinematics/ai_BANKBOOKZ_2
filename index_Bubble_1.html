@@ -338,28 +338,35 @@
             localStorage.setItem('FMP_KEY', key);
         }
 
-        let MARKET_DATA_MAIN = JSON.parse(localStorage.getItem('MARKET_DATA_MAIN')) || []; // Market Data for LocalStorage.
-        let PORTFOLIO_SET = ["NVDA", "AMZN", "GOOG"];
+        let MARKET_DATA_MASTER = [];
         let marketChartInstance = null;
         // let PORTFOLIO_SET = ["NVDA", "AMZN", "GOOG", "COST", "MU", "XLK", "SPY", "GDX"];
+        let PORTFOLIO_SET = ["NVDA"];
 
         async function render_MARKET_DATA() {
-            // Orchestrate flow
-            await update_DATA_STORAGE();
+            const xVal = document.getElementById('select_X').value;
+            const yVal = document.getElementById('select_Y').value;
+            const zVal = document.getElementById('select_Z').value;
 
-            // Format data
-            const chartData = format_Bubble_DATA(MARKET_DATA_MAIN);
+            // Helper to map selection to object property
+            const getProp = (item, selection) => {
+                switch (selection) {
+                    case '%Growth': return item.changesPercentage;
+                    case 'PRICE': return item.price;
+                    case 'VOLUME': return item.volume;
+                    case 'MARKETCAP': return item.mktCap;
+                    default: return 0;
+                }
+            };
 
-            // Sync UI dropdowns to match forced format (Volume, % Gain, Market Cap)
-            document.getElementById('select_X').value = '%Growth';
-            document.getElementById('select_Y').value = 'VOLUME';
-            document.getElementById('select_Z').value = 'MARKETCAP';
+            const chartData = MARKET_DATA_MASTER.map(item => ({
+                x: getProp(item, xVal),
+                y: getProp(item, yVal),
+                r: Math.sqrt(getProp(item, zVal)) / 1000, // Scale radius arbitrarily for now
+                item: item // keep ref
+            }));
 
-            const xVal = '%Growth';
-            const yVal = 'VOLUME';
-            const zVal = 'MARKETCAP';
-
-            const ctx = document.getElementById('bubbleChart').getContext('2d');
+            const ctx = document.getElementById('marketChart').getContext('2d');
 
             if (marketChartInstance) {
                 marketChartInstance.destroy();
@@ -378,11 +385,11 @@
                 options: {
                     scales: {
                         x: {
-                            title: { display: true, text: 'Growth % (YTD/Changes)' },
+                            title: { display: true, text: xVal },
                             type: 'linear', position: 'bottom'
                         },
                         y: {
-                            title: { display: true, text: 'Volume' }
+                            title: { display: true, text: yVal }
                         }
                     },
                     plugins: {
@@ -390,7 +397,7 @@
                             callbacks: {
                                 label: function (context) {
                                     const raw = context.raw;
-                                    return `${raw.item.symbol}: (Growth:${raw.x}%, Vol:${raw.y}, Cap:${(raw.item.mktCap / 1e9).toFixed(2)}B)`;
+                                    return `${raw.item.symbol}: (${xVal}:${raw.x}, ${yVal}:${raw.y})`;
                                 }
                             }
                         }
@@ -402,34 +409,6 @@
             go_CHARTS();
         }
 
-        function format_Bubble_DATA(data) {
-            // The data needs to be volume, % gain YTD, and market cap
-            // x: % Gain, y: Volume, r: Market Cap
-            return data.map(item => ({
-                x: item.changesPercentage,
-                y: item.volume,
-                r: Math.sqrt(item.mktCap) / 2000,
-                item: item
-            }));
-        }
-
-        async function update_DATA_STORAGE() {
-            const today = new Date().toISOString().split('T')[0];
-            const lastUpdate = localStorage.getItem('LAST_UPDATE_DATE');
-
-            if (lastUpdate !== today || !MARKET_DATA_MAIN.length) {
-                console.log('Data stale or missing. Fetching new data...');
-                const success = await load_MARKET_DATA();
-                if (success) {
-                    localStorage.setItem('LAST_UPDATE_DATE', today);
-                    return true;
-                }
-                return false;
-            }
-            console.log('Data is fresh.');
-            return true;
-        }
-
 
         async function load_MARKET_DATA() {
 
@@ -438,65 +417,24 @@
 
             if (!key) {
                 textArea.value = 'Please enter an API Key first.';
-                alert('Please enter an API Key first.');
-                return false;
+                return;
             }
 
-            // textArea.value = 'Fetching market data...'; // Don't wipe if called in background
-            console.log('Fetching market data...');
-
+            textArea.value = 'Fetching market data...';
             try {
-                const promises = PORTFOLIO_SET.map(symbol =>
-                    // fetch(`https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=${key}`)
-                    fetch(`https://financialmodelingprep.com/stable/search-symbol?query=${symbol}&apikey=${key}`)
-                        .then(res => {
-                            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                            return res.json();
-                        })
-                        .catch(e => {
-                            console.error(`Error fetching ${symbol}:`, e);
-                            return [];
-                        })
-                );
+                const response = await fetch(`https://financialmodelingprep.com/stable/search-symbol?query=AAPL&apikey=${key}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                const results = await Promise.all(promises);
-                results.forEach((arr, i) => results[i] = arr.filter(item => item.currency === "USD"));
+                // Save valid key
+                localStorage.setItem('FMP_KEY', key);
 
-                const data = results.flat();
+                const data = await response.json();
+                data.splice(0, data.length, ...data.filter(item => item.currency === "USD"));
 
-                // Save valid key (if we got this far)
-                // localStorage.setItem('FMP_KEY', key);
-
-                let addedCount = 0;
-
-                // only adding the data, if it is not duplicate date
-                const today = new Date().toISOString().split('T')[0];
-
-                data.forEach(newItem => {
-                    // Assuming API returns enough info to identify uniqueness, or we rely on daily purge/check.
-                    // For now, let's remove old entries for the same symbol to simple "update" logic
-                    // Or keep the duplicate check if we want history.
-                    // User request says "update_DATA_STORAGE... if not recent... update local storage".
-                    // Let's replace/update logic:
-
-                    const existingIndex = MARKET_DATA_MAIN.findIndex(existingItem => existingItem.symbol === newItem.symbol);
-                    if (existingIndex > -1) {
-                        MARKET_DATA_MAIN[existingIndex] = newItem; // Update existing
-                    } else {
-                        MARKET_DATA_MAIN.push(newItem); // Add new
-                        addedCount++;
-                    }
-                });
-
-                // Then save unique MARKET_DATA_MAIN data in LocalStorage
-                localStorage.setItem('MARKET_DATA_MAIN', JSON.stringify(MARKET_DATA_MAIN));
-
-                textArea.value = `Updated/Added items. Total: ${MARKET_DATA_MAIN.length}\n` + JSON.stringify(MARKET_DATA_MAIN, null, 4);
-                return true;
+                textArea.value = JSON.stringify(data, null, 4);
             } catch (error) {
                 textArea.value = 'Error fetching data: ' + error.message;
                 console.error('Fetch error:', error);
-                return false;
             }
         }
 
@@ -601,7 +539,7 @@
             }
         };
 
-        marketChartInstance = new Chart(ctx, config);
+        new Chart(ctx, config);
     </script>
 </body>
 
